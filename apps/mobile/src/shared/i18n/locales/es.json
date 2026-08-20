@@ -1,0 +1,39 @@
+{
+  "common": {
+    "appName": "Última Chispa",
+    "slogan": "Brilla intensamente antes de que tu teléfono muera"
+  },
+  "waiting": {
+    "batteryLabel": "Batería {{level}}%",
+    "enterIn": "{{percent}}% para poder entrar",
+    "gravestoneGalleryTitle": "Galería de Lápidas",
+    "hallOfFameTitle": "Salón de la Fama"
+  },
+  "lounge": {
+    "title": "Sala",
+    "proximityChatHint": "Solo los jugadores cercanos ven tu chat",
+    "cheersToast": "¡Salud!"
+  },
+  "emergency": {
+    "title": "¡Emergencia! Carga detectada",
+    "detachCta": "Desconecta el cargador",
+    "timerLabel": "Expulsión en {{seconds}}s"
+  },
+  "altar": {
+    "title": "Altar de la Descarga",
+    "placeholder": "Tus últimas palabras (máx. 30 caracteres)",
+    "submitCta": "Dejar últimas palabras",
+    "charCount": "{{count}}/30"
+  },
+  "death": {
+    "title": "Tu teléfono se apagó",
+    "graveCreated": "Se creó una lápida",
+    "shareCta": "Compartir tarjeta de resultado"
+  },
+  "shop": {
+    "oxygenMask": "Máscara de Oxígeno (ver anuncio)",
+    "traitorPass": "Pase de Traidor",
+    "customGrave": "Lápida Personalizada y Efecto de Muerte",
+    "hallOfFameBanner": "Cartel del Salón de la Fama"
+  }
+}

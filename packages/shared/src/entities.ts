@@ -1,0 +1,77 @@
+/**
+ * 엔티티 타입 (기획서 5.1 DB 스키마 + 6장 수익화 모델 그대로 반영)
+ */
+
+/** 묘비 및 유언장 아카이브 (`gravestones` 테이블) */
+export interface Gravestone {
+  id: string; // UUID
+  countryCode: string;
+  nickname: string;
+  lastWords: string; // 최대 100자
+  skinId: string;
+  graveType: "basic" | "gold" | "neon";
+  likesCount: number;
+  createdAt: string; // ISO timestamp
+}
+
+/** 사용자 인벤토리 (`user_inventory` 테이블) */
+export interface UserInventory {
+  userId: string; // UUID
+  hasTraitorPass: boolean;
+  equippedGrave: string;
+}
+
+/** 라운지 룸 (국가별 매칭 + 정원 초과 시 분점, 기획서 3장) */
+export interface LoungeRoom {
+  id: string; // 예: "KR-1"
+  countryCode: string;
+  capacity: 30;
+  occupants: number;
+}
+
+export interface Player {
+  id: string;
+  nickname: string;
+  charId: string;
+  countryCode: string;
+  batteryLevel: number;
+  isCharging: boolean;
+  roomId: string | null;
+}
+
+/** 수익화 상품 (기획서 6장) — priceUsd/priceKrw는 기획 참고용 표시값 */
+export const SHOP_ITEMS = [
+  {
+    id: "oxygen_mask",
+    nameKo: "산소호흡기 (보상형 광고)",
+    priceUsd: 0,
+    kind: "rewarded_ad",
+    effect: "grace_3min",
+  },
+  {
+    id: "traitor_pass",
+    nameKo: "배신자 프리패스 (환자복 스킨)",
+    priceUsd: 0.99,
+    priceKrw: 1100,
+    kind: "iap",
+    effect: "no_emergency_kick_10min",
+  },
+  {
+    id: "custom_grave",
+    nameKo: "커스텀 묘비 & 사망 이펙트",
+    priceUsd: 1.99,
+    priceKrw: 2500,
+    kind: "iap",
+    effect: "grave_skin",
+  },
+  {
+    id: "hall_of_fame_banner",
+    nameKo: "명예의 전당 전광판",
+    priceUsd: 1.99,
+    priceKrw: 2500,
+    kind: "iap",
+    effect: "banner_24h",
+  },
+] as const;
+
+export type ShopItemId = (typeof SHOP_ITEMS)[number]["id"];

@@ -1,0 +1,39 @@
+{
+  "common": {
+    "appName": "마지막 불꽃",
+    "slogan": "폰이 꺼지기 전, 가장 뜨겁게 타오르는 10분"
+  },
+  "waiting": {
+    "batteryLabel": "현재 배터리 {{level}}%",
+    "enterIn": "입장까지 {{percent}}% 남음",
+    "gravestoneGalleryTitle": "명예의 묘비 갤러리",
+    "hallOfFameTitle": "명예의 전당"
+  },
+  "lounge": {
+    "title": "라운지",
+    "proximityChatHint": "가까운 사람에게만 채팅이 보여요",
+    "cheersToast": "건배!"
+  },
+  "emergency": {
+    "title": "비상! 충전이 감지되었습니다",
+    "detachCta": "충전기 분리하기",
+    "timerLabel": "{{seconds}}초 후 강제 퇴장"
+  },
+  "altar": {
+    "title": "방전 제단",
+    "placeholder": "마지막으로 남길 말 (최대 30자)",
+    "submitCta": "유언 남기기",
+    "charCount": "{{count}}/30"
+  },
+  "death": {
+    "title": "방전되었습니다",
+    "graveCreated": "묘비가 생성되었습니다",
+    "shareCta": "결과 카드 공유하기"
+  },
+  "shop": {
+    "oxygenMask": "산소호흡기 (광고 시청)",
+    "traitorPass": "배신자 프리패스",
+    "customGrave": "커스텀 묘비 & 사망 이펙트",
+    "hallOfFameBanner": "명예의 전당 전광판"
+  }
+}

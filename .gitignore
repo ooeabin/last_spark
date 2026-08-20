@@ -1,0 +1,13 @@
+node_modules/
+.expo/
+dist/
+web-build/
+*.log
+.env
+.env.local
+apps/server/dist/
+apps/server/generated/
+packages/shared/dist/
+.DS_Store
+*.tsbuildinfo
+_to_delete/

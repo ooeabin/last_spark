@@ -1,0 +1,39 @@
+{
+  "common": {
+    "appName": "最後の灯",
+    "slogan": "電源が切れる前、一番熱く燃える10分"
+  },
+  "waiting": {
+    "batteryLabel": "バッテリー残量 {{level}}%",
+    "enterIn": "入場まであと{{percent}}%",
+    "gravestoneGalleryTitle": "墓標ギャラリー",
+    "hallOfFameTitle": "殿堂"
+  },
+  "lounge": {
+    "title": "ラウンジ",
+    "proximityChatHint": "近くの人にだけチャットが見えます",
+    "cheersToast": "乾杯!"
+  },
+  "emergency": {
+    "title": "緊急事態!充電が検知されました",
+    "detachCta": "充電器を抜く",
+    "timerLabel": "{{seconds}}秒後に強制退場"
+  },
+  "altar": {
+    "title": "放電の祭壇",
+    "placeholder": "最後の言葉 (最大30文字)",
+    "submitCta": "遺言を残す",
+    "charCount": "{{count}}/30"
+  },
+  "death": {
+    "title": "電源が切れました",
+    "graveCreated": "墓標が作成されました",
+    "shareCta": "結果カードをシェア"
+  },
+  "shop": {
+    "oxygenMask": "酸素マスク (広告視聴)",
+    "traitorPass": "裏切り者パス",
+    "customGrave": "カスタム墓標 & 死亡エフェクト",
+    "hallOfFameBanner": "殿堂電光掲示板"
+  }
+}

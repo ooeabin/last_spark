@@ -1,0 +1,52 @@
+---
+description: 마지막 불꽃(Last Spark) 레포 전체 가이드 — 구조, 상태머신, 소켓 계약, 컨벤션
+globs:
+alwaysApply: true
+---
+
+# 마지막 불꽃 (Last Spark)
+
+배터리 잔량 10% 이하에서만 입장 가능한, 국가별로 매칭되는 2D(패럴랙스 배경 + 도트 캐릭터, 데이브 더 다이브 스타일) 메타버스 시한부 라운지.
+
+이 파일은 Cursor가 항상 읽는 요약 가이드다. 더 깊이 필요하면:
+- `docs/기획서.md` — 기획 원본 (기능 추가/변경 시 먼저 확인)
+- `.claude/skills/last-spark-domain/SKILL.md` — 상태머신/소켓 계약/DB/커밋 규칙 등 도메인 규칙 전체 (이 파일의 내용과 거의 동일하지만 더 상세함 — Claude Code용으로 만든 문서지만 Cursor에서 작업할 때도 그대로 유효)
+- `apps/mobile/CLAUDE.md`, `apps/server/CLAUDE.md` — 앱별 컨벤션
+
+## 레포 구조
+
+```
+last-spark/
+  docs/                          기획서·실행체크리스트·디자인 시스템 원본 (참고용, 코드 아님)
+  packages/shared/                mobile↔server 공유 TS 타입 (상태머신·소켓 이벤트·엔티티) — 단일 소스
+  apps/mobile/                    React Native + Expo 클라이언트 (FSD-lite: screens/widgets/features/entities/shared)
+  apps/server/                    Fastify + Socket.io 백엔드 (config/sockets/rooms/routes/db/lib)
+  .claude/skills/last-spark-domain/SKILL.md   도메인 규칙 (Claude Code 스킬, 내용은 도구 무관)
+  .cursor/rules/last-spark.mdc    이 파일
+```
+
+패키지 매니저는 **pnpm**(workspace:* 프로토콜, `pnpm-workspace.yaml`). `pnpm install` → `pnpm run server` / `pnpm run mobile`.
+
+## 상태머신이 곧 앱의 뼈대다
+
+`packages/shared/src/state-machine.ts`의 `evaluateNextState()`가 유일한 전이 로직 소스다. WAITING → LOUNGE → EMERGENCY / LAST_RITES → DEAD. mobile 스토어(`apps/mobile/src/features/battery-tracking/model/gameStateStore.ts`)나 서버 룸 로직에 전이 조건을 다시 구현하지 말 것 — 항상 이 함수를 통해서만 판정한다.
+
+## 소켓 이벤트는 packages/shared가 기준
+
+`packages/shared/src/socket-events.ts`에 클라이언트-서버 이벤트 타입이 전부 있다. 새 이벤트 추가 순서: shared 타입 → 서버 핸들러(`apps/server/src/sockets/`) → 클라이언트 훅(`apps/mobile/src/features/`). 기획서 5.2 원표에 없던 `lounge:joined`/`altar:submit`/`emergency:detach`/`presence:update` 4개가 구현 과정에서 추가됐다 — 이유는 SKILL.md 참고.
+
+## 지키면 안 되는 방향 전환
+
+- **아트 디렉션은 3D가 아니라 2D**(데이브 더 다이브 스타일: 정적/패럴랙스 배경 + 도트 캐릭터, 고정 시점). react-three-fiber 같은 3D 스택은 검토 후 철회된 이력이 있다 — 다시 제안하기 전에 `docs/기획서.md` 2.1.1과 SKILL.md "아트 디렉션 — 3D 아님" 절부터 확인할 것.
+- **룸 매칭은 국가별로 분리, 비주얼 테마는 전 국가 통일.** 이 둘을 섞어서 "단일 글로벌 룸"으로 되돌리지 말 것 — 과거에 한 번 잘못 해석했다가 정정된 지점이다.
+
+## 커밋 메시지
+
+```
+<type> : <subject>
+```
+type은 `feat`/`fix`/`refactor`/`style`/`chore`/`docs`/`test`(소문자), subject는 한글·마침표 없음. 예: `feat : 커리어카드 폼 Dialog fullscreen variant 추가`
+
+## 디자인 시스템
+
+`apps/mobile/src/shared/theme/tokens.ts`가 `docs/DESIGN.md`(Spotify 스타일 다크 시스템)를 옮긴 것 — 구조는 그대로, 브랜드 컬러만 네온 placeholder로 대체했다. 새 UI는 색상 하드코딩 대신 이 토큰과 `apps/mobile/src/shared/ui`의 컴포넌트를 우선 재사용할 것.

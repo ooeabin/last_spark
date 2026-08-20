@@ -1,0 +1,39 @@
+{
+  "common": {
+    "appName": "Last Spark",
+    "slogan": "Burn bright before your phone dies"
+  },
+  "waiting": {
+    "batteryLabel": "Battery {{level}}%",
+    "enterIn": "{{percent}}% until you can enter",
+    "gravestoneGalleryTitle": "Gravestone Gallery",
+    "hallOfFameTitle": "Hall of Fame"
+  },
+  "lounge": {
+    "title": "Lounge",
+    "proximityChatHint": "Only nearby players can see your chat",
+    "cheersToast": "Cheers!"
+  },
+  "emergency": {
+    "title": "Emergency! Charging detected",
+    "detachCta": "Unplug the charger",
+    "timerLabel": "Ejected in {{seconds}}s"
+  },
+  "altar": {
+    "title": "Altar of Depletion",
+    "placeholder": "Your last words (max 30 chars)",
+    "submitCta": "Leave last words",
+    "charCount": "{{count}}/30"
+  },
+  "death": {
+    "title": "Your phone died",
+    "graveCreated": "A gravestone was created",
+    "shareCta": "Share your result card"
+  },
+  "shop": {
+    "oxygenMask": "Oxygen Mask (watch ad)",
+    "traitorPass": "Traitor's Pass",
+    "customGrave": "Custom Gravestone & Death Effect",
+    "hallOfFameBanner": "Hall of Fame Banner"
+  }
+}

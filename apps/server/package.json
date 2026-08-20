@@ -1,0 +1,29 @@
+{
+  "name": "@last-spark/server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Last Spark 백엔드 — Fastify REST + Socket.io 실시간 라운지 서버 (기획서 5장, 9.2)",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev"
+  },
+  "dependencies": {
+    "@last-spark/shared": "workspace:*",
+    "@fastify/cors": "^9.0.1",
+    "@prisma/client": "^5.14.0",
+    "fastify": "^4.28.0",
+    "socket.io": "^4.7.5",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.0",
+    "prisma": "^5.14.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.4.0"
+  }
+}

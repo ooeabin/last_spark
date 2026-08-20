@@ -1,0 +1,1 @@
+export { DeathScreen } from "./DeathScreen";

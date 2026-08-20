@@ -1,0 +1,35 @@
+// 기획서 5.1 Database Schema (PostgreSQL / Supabase) 그대로 반영
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// 묘비 및 유언장 아카이브 테이블
+model Gravestone {
+  id          String   @id @default(uuid())
+  countryCode String   @map("country_code") @db.VarChar(5)
+  nickname    String   @db.VarChar(30)
+  lastWords   String   @map("last_words") @db.VarChar(100)
+  skinId      String   @map("skin_id") @db.VarChar(20)
+  graveType   String   @map("grave_type") @db.VarChar(20) // basic / gold / neon
+  likesCount  Int      @default(0) @map("likes_count")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("gravestones")
+  @@index([countryCode, createdAt])
+}
+
+/// 사용자 인벤토리 테이블
+model UserInventory {
+  userId          String  @id @default(uuid()) @map("user_id")
+  hasTraitorPass  Boolean @default(false) @map("has_traitor_pass")
+  equippedGrave   String  @default("basic") @map("equipped_grave") @db.VarChar(20)
+
+  @@map("user_inventory")
+}

@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "마지막 불꽃",
+    "slug": "last-spark",
+    "scheme": "lastspark",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#121212"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.lastspark.app",
+      "infoPlist": {
+        "UIBackgroundModes": []
+      }
+    },
+    "android": {
+      "package": "com.lastspark.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#121212"
+      }
+    },
+    "plugins": ["expo-router", "expo-localization"],
+    "extra": {
+      "socketServerUrl": "http://localhost:4000"
+    }
+  }
+}

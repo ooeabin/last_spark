@@ -1,0 +1,1 @@
+export { AltarScreen } from "./AltarScreen";
