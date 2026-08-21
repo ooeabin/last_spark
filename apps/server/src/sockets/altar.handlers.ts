@@ -1,15 +1,16 @@
 import type { Server, Socket } from "socket.io";
-import type {
-  ClientToServerEvents,
-  ServerToClientEvents,
-  AltarSubmitPayload,
+import {
+  MAX_ALTAR_MESSAGE_LENGTH,
+  type ClientToServerEvents,
+  type ServerToClientEvents,
+  type AltarSubmitPayload,
 } from "@last-spark/shared";
 import { getSession } from "./session";
 
 type IOServer = Server<ClientToServerEvents, ServerToClientEvents>;
 type IOSocket = Socket<ClientToServerEvents, ServerToClientEvents>;
 
-const MAX_LAST_WORDS_LENGTH = 30; // 기획서 4.2-C
+const MAX_LAST_WORDS_LENGTH = MAX_ALTAR_MESSAGE_LENGTH; // packages/shared/src/entities.ts가 단일 소스 (기획서 4.2-C)
 
 /**
  * altar:submit(C→S, 스타터 확장 이벤트) → altar:broadcast(S→C, 5.2 원본).

@@ -7,7 +7,7 @@ import { BatteryStatusBar } from "@/widgets/status-bar";
 import { LeaderboardBanner } from "@/widgets/leaderboard-banner";
 import { GravestoneGallery } from "@/widgets/gravestone-gallery";
 import { AppText, ScreenContainer } from "@/shared/ui";
-import { spacing } from "@/shared/theme/tokens";
+import { colors, spacing } from "@/shared/theme/tokens";
 
 /** A. 대기 모드 (기획서 2.2, 4.1) — 배터리 > 10% 또는 충전 중 */
 export function WaitingScreen() {
@@ -20,7 +20,7 @@ export function WaitingScreen() {
       <ScrollView contentContainerStyle={{ gap: spacing.lg }}>
         <View>
           <AppText variant="sectionTitle">{t("common.appName")}</AppText>
-          <AppText variant="caption" color="#b3b3b3">
+          <AppText variant="caption" color={colors.textSecondary}>
             {t("common.slogan")}
           </AppText>
         </View>

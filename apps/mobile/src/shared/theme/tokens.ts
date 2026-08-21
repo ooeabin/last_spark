@@ -42,6 +42,9 @@ export const colors = {
    */
   accent: "#00f0ff",
   accentBorder: "#00c2d1",
+
+  /** 비상 카운트다운(C) 전용 배경 — 짙은 핏빛 레드, 기획서 4.2-D "붉은 비상등 전환" */
+  emergencyBackground: "#2a0d10",
 } as const;
 
 /** DESIGN.md 6절 Depth & Elevation 그대로 (React Native shadow 근사치) */

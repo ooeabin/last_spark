@@ -2,6 +2,14 @@
  * 엔티티 타입 (기획서 5.1 DB 스키마 + 6장 수익화 모델 그대로 반영)
  */
 
+/**
+ * 1% 방전 제단에서 남길 수 있는 유언 최대 길이 (기획서 4.2-C).
+ * 클라이언트(`apps/mobile/src/features/altar-broadcast/model/useAltar.ts`)와
+ * 서버(`apps/server/src/sockets/altar.handlers.ts`)가 각자 이 값을 로컬
+ * 상수로 중복 정의하던 것을 여기 하나로 합쳤다 — 값을 바꿀 땐 여기만 고치면 된다.
+ */
+export const MAX_ALTAR_MESSAGE_LENGTH = 30;
+
 /** 묘비 및 유언장 아카이브 (`gravestones` 테이블) */
 export interface Gravestone {
   id: string; // UUID

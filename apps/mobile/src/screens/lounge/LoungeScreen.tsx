@@ -18,7 +18,7 @@ export function LoungeScreen() {
       <View style={{ gap: spacing.md, flex: 1 }}>
         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
           <AppText variant="sectionTitle">{t("lounge.title")}</AppText>
-          <AppText variant="small" color="#b3b3b3">
+          <AppText variant="small" color={colors.textSecondary}>
             {room ? `${room.roomId} · ${room.occupants}/${room.capacity}` : "연결 중..."}
           </AppText>
         </View>
@@ -41,12 +41,12 @@ export function LoungeScreen() {
             borderRadius: radius.dialog,
           }}
         >
-          <AppText variant="caption" color="#7c7c7c">
+          <AppText variant="caption" color={colors.borderLight}>
             2D 라운지 씬 자리 — 배경/캐릭터 에셋 연동 전
           </AppText>
         </Card>
 
-        <AppText variant="small" color="#7c7c7c">
+        <AppText variant="small" color={colors.borderLight}>
           {t("lounge.proximityChatHint")}
         </AppText>
 

@@ -18,14 +18,14 @@ export function DeathScreen() {
         <AppText variant="sectionTitle" color={colors.negative}>
           {t("death.title")}
         </AppText>
-        <AppText variant="caption" color="#b3b3b3">
+        <AppText variant="caption" color={colors.textSecondary}>
           {t("death.graveCreated")}
         </AppText>
 
         <ShareCardButton>
           <Card style={{ aspectRatio: 9 / 16, alignItems: "center", justifyContent: "center" }}>
             <AppText variant="featureHeading">🪦</AppText>
-            <AppText variant="caption" color="#7c7c7c">
+            <AppText variant="caption" color={colors.borderLight}>
               결과 카드 미리보기 (9:16)
             </AppText>
           </Card>

@@ -47,7 +47,7 @@ export function AltarScreen() {
             padding: spacing.md,
           }}
         />
-        <AppText variant="small" color="#7c7c7c">
+        <AppText variant="small" color={colors.borderLight}>
           {t("altar.charCount", { count: message.length })}
         </AppText>
 

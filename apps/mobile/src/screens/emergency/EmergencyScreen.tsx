@@ -11,7 +11,7 @@ export function EmergencyScreen() {
   const { secondsLeft, detach } = useEmergencyCountdown();
 
   return (
-    <ScreenContainer style={{ backgroundColor: "#2a0d10" }}>
+    <ScreenContainer style={{ backgroundColor: colors.emergencyBackground }}>
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center", gap: spacing.lg }}>
         <AppText variant="sectionTitle" color={colors.negative}>
           {t("emergency.title")}

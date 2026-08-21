@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { getSocket } from "@/shared/api/socketClient";
 import { useGameStateStore } from "@/features/battery-tracking";
-import type { AltarBroadcastPayload } from "@last-spark/shared";
+import { MAX_ALTAR_MESSAGE_LENGTH, type AltarBroadcastPayload } from "@last-spark/shared";
 
-const MAX_LENGTH = 30; // 기획서 4.2-C
+const MAX_LENGTH = MAX_ALTAR_MESSAGE_LENGTH; // packages/shared/src/entities.ts가 단일 소스 (기획서 4.2-C)
 
 /**
  * 1% 방전 제단 (기획서 4.2-C). 제단이 열려있는 동안엔 gameStateStore의

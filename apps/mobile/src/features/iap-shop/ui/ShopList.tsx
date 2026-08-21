@@ -2,7 +2,7 @@ import React from "react";
 import { View } from "react-native";
 import { SHOP_ITEMS } from "@last-spark/shared";
 import { AppText, Button, Card } from "@/shared/ui";
-import { spacing } from "@/shared/theme/tokens";
+import { colors, spacing } from "@/shared/theme/tokens";
 
 /**
  * 상점 목록 (기획서 6장). TODO: RevenueCat SDK 연동(실행체크리스트 4단계,
@@ -15,7 +15,7 @@ export function ShopList() {
       {SHOP_ITEMS.map((item) => (
         <Card key={item.id}>
           <AppText variant="bodyBold">{item.nameKo}</AppText>
-          <AppText variant="caption" color="#b3b3b3">
+          <AppText variant="caption" color={colors.textSecondary}>
             {item.kind === "rewarded_ad" ? "무료 (광고 시청)" : `$${item.priceUsd}`}
           </AppText>
           <Button
