@@ -9,7 +9,7 @@
 3. `apps/mobile/CLAUDE.md`, `apps/server/CLAUDE.md` — 앱별 컨벤션
 4. `docs/기획서.md` — 기획 원본 (기능 추가/변경 시 먼저 여기부터 확인)
 
-Cursor로 이 레포를 열면 `.cursor/rules/last-spark.mdc`가 2번 문서를 요약해서 자동으로 읽힌다 — 내용은 같은 소스에서 나온 것이므로 둘 중 아무거나 하나만 최신이면 다른 하나도 신뢰할 수 있다(단, 실제 갱신은 둘 다 손으로 맞춰야 한다 — 아래 "문서 구성 규칙" 참고).
+Cursor·Codex 등 `AGENTS.md`를 읽는 툴로 이 레포를 열면 루트의 `AGENTS.md`가 2번 문서를 요약해서 자동으로 읽힌다 — 내용은 같은 소스에서 나온 것이므로 둘 중 아무거나 하나만 최신이면 다른 하나도 신뢰할 수 있다(단, 실제 갱신은 둘 다 손으로 맞춰야 한다 — 아래 "문서 구성 규칙" 참고).
 
 ## 레포 구조
 
@@ -20,7 +20,7 @@ last-spark/
   apps/mobile/                    React Native + Expo 클라이언트 (FSD-lite)
   apps/server/                    Fastify + Socket.io 백엔드
   .claude/skills/last-spark-domain/SKILL.md   도메인 규칙 스킬 (Claude Code)
-  .cursor/rules/last-spark.mdc    같은 도메인 규칙 요약 (Cursor)
+  AGENTS.md                       같은 도메인 규칙 요약 (Cursor·Codex 등 범용)
   pnpm-workspace.yaml             pnpm 워크스페이스 정의 (apps/*, packages/*)
   .npmrc                          pnpm 설정 (peer dependency 관련)
 ```
@@ -55,8 +55,8 @@ pnpm run typecheck            # shared → server → mobile 순서로 타입체
 
 ## 문서 구성 규칙
 
-- `README.md`, `CLAUDE.md`, `.cursor/rules/*.mdc`는 각 도구(사람/Claude Code/Cursor)가 자동으로 찾는 고정 파일명·경로다 — 이름을 바꾸거나 다른 곳으로 옮기지 않는다.
-- 이 세 파일은 서로 내용을 베끼지 않는다. 각자 자기 독자에게 맞는 톤·분량으로 같은 결론을 요약하는 얇은 진입점이고, 실제 상세 내용(도메인 규칙)의 원본은 `.claude/skills/last-spark-domain/SKILL.md` 하나뿐이다. 도메인 규칙이 바뀌면 SKILL.md부터 고치고, 필요하면 `.cursor/rules/last-spark.mdc`의 요약도 같이 갱신한다(자동 동기화 아님 — 사람이 손으로 맞춰야 함).
+- `README.md`, `CLAUDE.md`, `AGENTS.md`는 각 도구(사람/Claude Code/Cursor·Codex 등)가 자동으로 찾는 고정 파일명·경로다 — 이름을 바꾸거나 다른 곳으로 옮기지 않는다.
+- 이 세 파일은 서로 내용을 베끼지 않는다. 각자 자기 독자에게 맞는 톤·분량으로 같은 결론을 요약하는 얇은 진입점이고, 실제 상세 내용(도메인 규칙)의 원본은 `.claude/skills/last-spark-domain/SKILL.md` 하나뿐이다. `SKILL.md`가 `docs/`나 다른 곳이 아니라 이 경로에 있는 이유도 같다 — `.claude/skills/*/SKILL.md`는 Claude Code가 필요할 때만 자동으로 불러오는 스킬 탐색 경로라, 다른 곳으로 옮기면 그냥 아무도 안 읽는 파일이 된다. 도메인 규칙이 바뀌면 SKILL.md부터 고치고, 필요하면 `AGENTS.md`의 요약도 같이 갱신한다(자동 동기화 아님 — 사람이 손으로 맞춰야 함).
 - `docs/`(기획·디자인 원본)는 프로젝트명 접두어 없이 문서 제목만으로 파일명을 짓는다 — `기획서.md`, `실행체크리스트.md`, `DESIGN.md`. 이미 이 레포 안에 있으므로 `last-spark-` 접두어는 중복 정보다.
 
 ## 컨벤션

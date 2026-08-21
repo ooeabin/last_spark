@@ -29,7 +29,7 @@ last-spark/
   apps/mobile/                    React Native + Expo 클라이언트 (FSD-lite)
   apps/server/                    Fastify + Socket.io 백엔드
   .claude/skills/last-spark-domain/  도메인 규칙 스킬 (Claude Code)
-  .cursor/rules/last-spark.mdc    같은 도메인 규칙 요약 (Cursor)
+  AGENTS.md                       같은 도메인 규칙 요약 (Cursor·Codex 등 범용)
   pnpm-workspace.yaml             pnpm 워크스페이스 정의
 ```
 
@@ -44,7 +44,7 @@ last-spark/
 | `docs/DESIGN.md` | 디자인 시스템 참고 자료 (`apps/mobile/src/shared/theme/tokens.ts`로 반영됨) |
 | `CLAUDE.md` | 레포 전체 구조·명령어 (Claude Code용, 파일명 고정) |
 | `apps/mobile/CLAUDE.md`, `apps/server/CLAUDE.md` | 앱별 컨벤션 |
-| `.claude/skills/last-spark-domain/SKILL.md` | 상태머신·소켓 계약·DB·커밋 규칙 등 도메인 규칙 (도구 무관 내용, Claude Code 스킬 형식) |
-| `.cursor/rules/last-spark.mdc` | 위 내용을 Cursor가 항상 읽도록 요약한 규칙 (Cursor용, 경로/포맷 고정) |
+| `.claude/skills/last-spark-domain/SKILL.md` | 상태머신·소켓 계약·DB·UI 컴포넌트·커밋 규칙 등 도메인 규칙 (도구 무관 내용, Claude Code 스킬 형식) |
+| `AGENTS.md` | 위 내용을 Cursor·Codex 등이 항상 읽도록 요약한 규칙 (루트 고정, 범용 포맷) |
 
-**문서 정리 규칙**: 루트의 `README.md`/`CLAUDE.md`와 `.cursor/rules/*.mdc`는 각 도구가 자동으로 읽는 고정 파일명·경로라 임의로 바꾸지 않는다. 이 세 곳은 서로 내용을 복사하지 않고 각자 다른 대상(사람/Claude Code/Cursor)에게 같은 결론을 요약해서 보여주는 얇은 진입점이고, 실제 상세 내용은 `docs/`(기획·디자인 원본)와 `.claude/skills/last-spark-domain/SKILL.md`(도메인 규칙 원본)에만 둔다. `docs/` 안 파일명은 프로젝트명 접두어 없이 문서 제목만 쓴다(`기획서.md`, `실행체크리스트.md`, `DESIGN.md`) — 이미 레포 안에 있어서 접두어가 중복 정보이기 때문.
+**문서 정리 규칙**: 루트의 `README.md`/`CLAUDE.md`/`AGENTS.md`는 각 도구(사람/Claude Code/Cursor·Codex 등)가 자동으로 읽는 고정 파일명·경로라 임의로 바꾸지 않는다. 이 세 곳은 서로 내용을 복사하지 않고 각자 다른 대상에게 같은 결론을 요약해서 보여주는 얇은 진입점이고, 실제 상세 내용은 `docs/`(기획·디자인 원본)와 `.claude/skills/last-spark-domain/SKILL.md`(도메인 규칙 원본)에만 둔다. `SKILL.md`가 `docs/`에 있지 않고 `.claude/skills/last-spark-domain/`에 있는 이유도 같은 맥락이다 — 이 경로는 Claude Code가 필요할 때만 자동으로 스킬을 불러오는 고정 탐색 위치라, 옮기면 그 기능을 잃는다. `docs/` 안 파일명은 프로젝트명 접두어 없이 문서 제목만 쓴다(`기획서.md`, `실행체크리스트.md`, `DESIGN.md`) — 이미 레포 안에 있어서 접두어가 중복 정보이기 때문.

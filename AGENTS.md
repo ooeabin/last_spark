@@ -1,16 +1,10 @@
----
-description: 마지막 불꽃(Last Spark) 레포 전체 가이드 — 구조, 상태머신, 소켓 계약, 컨벤션
-globs:
-alwaysApply: true
----
-
 # 마지막 불꽃 (Last Spark)
 
 배터리 잔량 10% 이하에서만 입장 가능한, 국가별로 매칭되는 2D(패럴랙스 배경 + 도트 캐릭터, 데이브 더 다이브 스타일) 메타버스 시한부 라운지.
 
-이 파일은 Cursor가 항상 읽는 요약 가이드다. 더 깊이 필요하면:
+이 파일은 Cursor·Codex 등 `AGENTS.md`를 읽는 에이전트 툴이 항상 참고하는 요약 가이드다. 더 깊이 필요하면:
 - `docs/기획서.md` — 기획 원본 (기능 추가/변경 시 먼저 확인)
-- `.claude/skills/last-spark-domain/SKILL.md` — 상태머신/소켓 계약/DB/커밋 규칙 등 도메인 규칙 전체 (이 파일의 내용과 거의 동일하지만 더 상세함 — Claude Code용으로 만든 문서지만 Cursor에서 작업할 때도 그대로 유효)
+- `.claude/skills/last-spark-domain/SKILL.md` — 상태머신/소켓 계약/DB/UI 컴포넌트/커밋 규칙 등 도메인 규칙 전체 (이 파일의 내용과 거의 동일하지만 더 상세함 — Claude Code용으로 만든 문서지만 다른 툴에서 작업할 때도 그대로 유효)
 - `apps/mobile/CLAUDE.md`, `apps/server/CLAUDE.md` — 앱별 컨벤션
 
 ## 레포 구조
@@ -18,11 +12,11 @@ alwaysApply: true
 ```
 last-spark/
   docs/                          기획서·실행체크리스트·디자인 시스템 원본 (참고용, 코드 아님)
-  packages/shared/                mobile↔server 공유 TS 타입 (상태머신·소켓 이벤트·엔티티) — 단일 소스
+  packages/shared/                mobile↔server 공유 TS 타입·상수(상태머신·소켓 이벤트·엔티티) — 단일 소스
   apps/mobile/                    React Native + Expo 클라이언트 (FSD-lite: screens/widgets/features/entities/shared)
   apps/server/                    Fastify + Socket.io 백엔드 (config/sockets/rooms/routes/db/lib)
   .claude/skills/last-spark-domain/SKILL.md   도메인 규칙 (Claude Code 스킬, 내용은 도구 무관)
-  .cursor/rules/last-spark.mdc    이 파일
+  AGENTS.md                       이 파일
 ```
 
 패키지 매니저는 **pnpm**(workspace:* 프로토콜, `pnpm-workspace.yaml`). `pnpm install` → `pnpm run server` / `pnpm run mobile`.
@@ -31,9 +25,13 @@ last-spark/
 
 `packages/shared/src/state-machine.ts`의 `evaluateNextState()`가 유일한 전이 로직 소스다. WAITING → LOUNGE → EMERGENCY / LAST_RITES → DEAD. mobile 스토어(`apps/mobile/src/features/battery-tracking/model/gameStateStore.ts`)나 서버 룸 로직에 전이 조건을 다시 구현하지 말 것 — 항상 이 함수를 통해서만 판정한다.
 
-## 소켓 이벤트는 packages/shared가 기준
+## 소켓 이벤트 · 공유 상수는 packages/shared가 기준
 
-`packages/shared/src/socket-events.ts`에 클라이언트-서버 이벤트 타입이 전부 있다. 새 이벤트 추가 순서: shared 타입 → 서버 핸들러(`apps/server/src/sockets/`) → 클라이언트 훅(`apps/mobile/src/features/`). 기획서 5.2 원표에 없던 `lounge:joined`/`altar:submit`/`emergency:detach`/`presence:update` 4개가 구현 과정에서 추가됐다 — 이유는 SKILL.md 참고.
+`packages/shared/src/socket-events.ts`에 클라이언트-서버 이벤트 타입이 전부 있다. 새 이벤트 추가 순서: shared 타입 → 서버 핸들러(`apps/server/src/sockets/`) → 클라이언트 훅(`apps/mobile/src/features/`). 기획서 5.2 원표에 없던 `lounge:joined`/`altar:submit`/`emergency:detach`/`presence:update` 4개가 구현 과정에서 추가됐다 — 이유는 SKILL.md 참고. 클라이언트·서버 양쪽이 똑같이 지켜야 하는 숫자 제약(예: 유언 30자 제한 `MAX_ALTAR_MESSAGE_LENGTH`)도 로컬 상수로 중복 정의하지 말고 `packages/shared/src/entities.ts`에서 가져다 쓴다.
+
+## UI는 shared/ui + tokens.ts가 기준
+
+텍스트는 `AppText`, 버튼은 `Button`, 카드는 `Card`, 화면 래퍼는 `ScreenContainer`(전부 `apps/mobile/src/shared/ui`) 재사용이 우선이다. 색은 `apps/mobile/src/shared/theme/tokens.ts`의 값만 쓰고 컴포넌트에 HEX를 직접 박지 않는다. 자세한 규칙은 SKILL.md "UI 컴포넌트 규칙"/"색상 규칙" 참고.
 
 ## 지키면 안 되는 방향 전환
 
@@ -47,6 +45,6 @@ last-spark/
 ```
 type은 `feat`/`fix`/`refactor`/`style`/`chore`/`docs`/`test`(소문자), subject는 한글·마침표 없음. 예: `feat : 커리어카드 폼 Dialog fullscreen variant 추가`
 
-## 디자인 시스템
+## 지금 아직 없는 것
 
-`apps/mobile/src/shared/theme/tokens.ts`가 `docs/DESIGN.md`(Spotify 스타일 다크 시스템)를 옮긴 것 — 구조는 그대로, 브랜드 컬러만 네온 placeholder로 대체했다. 새 UI는 색상 하드코딩 대신 이 토큰과 `apps/mobile/src/shared/ui`의 컴포넌트를 우선 재사용할 것.
+테스트 프레임워크·린트·포맷터가 아직 설정되어 있지 않다. 코드 작성 후 `pnpm run typecheck` 통과만 필수이고, 테스트/린트 도입은 사용자와 먼저 논의한다.
