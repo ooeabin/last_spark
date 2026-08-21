@@ -22,9 +22,19 @@
         "backgroundColor": "#121212"
       }
     },
-    "plugins": ["expo-router", "expo-localization"],
+    "plugins": [
+      "expo-router",
+      "expo-localization"
+    ],
     "extra": {
-      "socketServerUrl": "http://localhost:4000"
-    }
+      "socketServerUrl": "http://localhost:4000",
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "46ff4c24-de99-4289-818c-69b9fdd49029"
+      }
+    },
+    "owner": "yebin"
   }
 }
