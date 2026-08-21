@@ -5,11 +5,12 @@
   "description": "Last Spark 백엔드 — Fastify REST + Socket.io 실시간 라운지 서버 (기획서 5장, 9.2)",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "build": "tsc -p tsconfig.json",
+    "dev": "pnpm prisma:generate && tsx watch src/index.ts",
+    "build": "prisma generate && tsc -p tsconfig.json",
     "start": "node dist/index.js",
-    "typecheck": "tsc --noEmit",
-    "prisma:generate": "prisma generate",
+    "typecheck": "prisma generate && tsc --noEmit",
+    "postinstall": "pnpm prisma:generate",
+    "prisma:generate": "DATABASE_URL=${DATABASE_URL:-postgresql://user:password@localhost:5432/last_spark} prisma generate",
     "prisma:migrate": "prisma migrate dev"
   },
   "dependencies": {
