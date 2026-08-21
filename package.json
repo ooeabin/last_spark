@@ -7,6 +7,8 @@
     "mobile": "pnpm --filter @last-spark/mobile start",
     "server": "pnpm --filter @last-spark/server dev",
     "typecheck": "pnpm --filter @last-spark/shared typecheck && pnpm --filter @last-spark/server typecheck && pnpm --filter @last-spark/mobile typecheck",
+    "build:shared": "pnpm --filter @last-spark/shared build",
+    "postinstall": "pnpm run build:shared",
     "prepare": "husky"
   },
   "devDependencies": {

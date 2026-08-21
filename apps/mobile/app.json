@@ -27,7 +27,7 @@
       "expo-localization"
     ],
     "extra": {
-      "socketServerUrl": "http://localhost:4000",
+      "socketServerUrl": "https://last-spark-server.onrender.com",
       "router": {
         "origin": false
       },
