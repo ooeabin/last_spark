@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useGameStateStore } from "@/features/battery-tracking";
 import { ShareCardButton } from "@/features/share-card";
@@ -33,9 +33,7 @@ export function DeathScreen() {
 
         <ShopList />
 
-        <View style={{ marginTop: spacing.lg }}>
-          <Button label="대기 화면으로" variant="pill" onPress={() => resetAfterDeath(100)} />
-        </View>
+        <Button label="대기 화면으로" variant="pill" onPress={() => resetAfterDeath(100)} />
       </ScrollView>
     </ScreenContainer>
   );

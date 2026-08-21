@@ -1,5 +1,6 @@
 import React from "react";
 import { useGameStateStore, useRealBatteryTracking } from "@/features/battery-tracking";
+import { useRoomConnection } from "@/features/lounge-matching";
 import { WaitingScreen } from "@/screens/waiting";
 import { LoungeScreen } from "@/screens/lounge";
 import { EmergencyScreen } from "@/screens/emergency";
@@ -15,6 +16,7 @@ import { DeathScreen } from "@/screens/death";
  */
 export function StateMachineRoot() {
   useRealBatteryTracking();
+  useRoomConnection();
   const gameState = useGameStateStore((s) => s.gameState);
 
   switch (gameState) {

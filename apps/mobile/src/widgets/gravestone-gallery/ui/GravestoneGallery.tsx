@@ -42,7 +42,7 @@ export function GravestoneGallery({ countryCode }: { countryCode: string }) {
         keyExtractor={(item) => item.id}
         scrollEnabled={false}
         renderItem={({ item }) => (
-          <Card style={{ marginBottom: spacing.xs }}>
+          <Card style={{ marginBottom: spacing.sm }}>
             <AppText variant="bodyBold">{item.nickname}</AppText>
             <AppText variant="caption" color={colors.textSecondary}>
               "{item.lastWords}"

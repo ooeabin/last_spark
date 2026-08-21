@@ -93,17 +93,22 @@ export const radius = {
 
 /** DESIGN.md 3절 Typography — RN 환경에 맞게 폰트 패밀리는 시스템 폰트로 대체 */
 export const typography = {
-  sectionTitle: { fontSize: 24, fontWeight: "700" as const },
+  sectionTitle: { fontSize: 24, fontWeight: "700" as const, lineHeight: 24 * 1.3 },
   featureHeading: { fontSize: 18, fontWeight: "600" as const, lineHeight: 18 * 1.3 },
-  bodyBold: { fontSize: 16, fontWeight: "700" as const },
-  body: { fontSize: 16, fontWeight: "400" as const },
+  bodyBold: { fontSize: 16, fontWeight: "700" as const, lineHeight: 16 * 1.4 },
+  body: { fontSize: 16, fontWeight: "400" as const, lineHeight: 16 * 1.4 },
+  /**
+   * DESIGN.md 원안의 letterSpacing 1.4는 영문 대문자 라벨(Spotify 스타일) 기준값이라
+   * 한글 라벨에 그대로 적용하면 자간이 부자연스럽게 벌어져 보인다(2026-08 UX 피드백).
+   * textTransform: uppercase는 한글엔 영향 없으니 그대로 두되, letterSpacing만 줄임.
+   */
   buttonUppercase: {
     fontSize: 14,
     fontWeight: "700" as const,
-    letterSpacing: 1.4,
+    letterSpacing: 0.4,
     textTransform: "uppercase" as const,
   },
-  caption: { fontSize: 14, fontWeight: "400" as const },
+  caption: { fontSize: 14, fontWeight: "400" as const, lineHeight: 14 * 1.4 },
   captionBold: { fontSize: 14, fontWeight: "700" as const, lineHeight: 14 * 1.5 },
   small: { fontSize: 12, fontWeight: "400" as const },
   smallBold: { fontSize: 12, fontWeight: "700" as const },

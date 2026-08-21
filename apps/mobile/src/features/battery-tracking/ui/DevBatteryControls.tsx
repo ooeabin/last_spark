@@ -22,7 +22,12 @@ export function DevBatteryControls() {
 
   return (
     <View style={styles.container}>
-      <AppText variant="smallBold">DEV — state: {gameState}</AppText>
+      <AppText variant="smallBold" color={colors.warning}>
+        ⚠ DEV ONLY — 실기기 빌드에는 보이지 않음
+      </AppText>
+      <AppText variant="small" color={colors.textSecondary}>
+        state: {gameState}
+      </AppText>
       <View style={styles.row}>
         <AppText variant="small">배터리 {batteryLevel}%</AppText>
         <Switch value={isCharging} onValueChange={setCharging} />
@@ -39,9 +44,12 @@ export function DevBatteryControls() {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: spacing.xxl,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderStyle: "dashed",
+    borderColor: colors.warning,
     borderRadius: 8,
+    backgroundColor: colors.background,
     padding: spacing.sm,
     gap: spacing.xs,
   },
