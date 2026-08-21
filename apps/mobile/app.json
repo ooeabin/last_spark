@@ -29,7 +29,8 @@
     "extra": {
       "socketServerUrl": "https://last-spark-server.onrender.com",
       "router": {
-        "origin": false
+        "origin": false,
+        "root": "./app"
       },
       "eas": {
         "projectId": "46ff4c24-de99-4289-818c-69b9fdd49029"
