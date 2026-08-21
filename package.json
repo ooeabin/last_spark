@@ -6,7 +6,11 @@
   "scripts": {
     "mobile": "pnpm --filter @last-spark/mobile start",
     "server": "pnpm --filter @last-spark/server dev",
-    "typecheck": "pnpm --filter @last-spark/shared typecheck && pnpm --filter @last-spark/server typecheck && pnpm --filter @last-spark/mobile typecheck"
+    "typecheck": "pnpm --filter @last-spark/shared typecheck && pnpm --filter @last-spark/server typecheck && pnpm --filter @last-spark/mobile typecheck",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
   },
   "engines": {
     "node": ">=18"
