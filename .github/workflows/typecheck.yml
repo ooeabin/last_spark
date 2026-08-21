@@ -1,0 +1,32 @@
+name: Typecheck
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    env:
+      # prisma generate가 실제 DB 연결 없이도 통과하도록 넣는 placeholder 값.
+      # 실배포 DB 접속 정보와는 무관 — CI에서는 타입 생성만 필요하다.
+      DATABASE_URL: postgresql://user:password@localhost:5432/last_spark
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck (shared → server → mobile)
+        run: pnpm run typecheck
