@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: last-spark-server
+    runtime: node
+    region: singapore
+    plan: starter
+    branch: develop
+    rootDir: .
+    buildFilter:
+      paths:
+        - apps/server/**
+        - packages/shared/**
+        - pnpm-lock.yaml
+        - pnpm-workspace.yaml
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @last-spark/server build
+    startCommand: pnpm --filter @last-spark/server start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      # Supabase 프로젝트의 Settings > Database > Connection string(URI)에서
+      # 복사해서 Render 대시보드에서 직접 입력한다 (여기엔 값을 두지 않음).
+      - key: DATABASE_URL
+        sync: false
+      - key: ROOM_CAPACITY
+        value: "30"
+      # 초기엔 비워둬 코드 기본값("*")을 쓴다. 실제 스토어 출시 전엔
+      # 앱 도메인/스킴으로 좁힐 것 (SKILL.md "리스크" 절 참고).
+      - key: CORS_ORIGIN
+        sync: false
