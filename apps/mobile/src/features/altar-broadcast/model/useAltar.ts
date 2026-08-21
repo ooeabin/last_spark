@@ -26,7 +26,9 @@ export function useAltar() {
     const socket = getSocket();
     const onBroadcast = (payload: AltarBroadcastPayload) => setBanner(payload);
     socket.on("altar:broadcast", onBroadcast);
-    return () => socket.off("altar:broadcast", onBroadcast);
+    return () => {
+      socket.off("altar:broadcast", onBroadcast);
+    };
   }, []);
 
   const submit = () => {
