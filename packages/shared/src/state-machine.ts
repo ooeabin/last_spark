@@ -46,6 +46,19 @@ export interface StateMachineInput {
   emergencyTimerExpired?: boolean; // C 상태에서 10초 경과 여부
   emergencyDetached?: boolean; // C 상태에서 충전기 분리 여부
   graceGranted?: boolean; // D 상태에서 보상형 광고로 3분 유예 획득 여부
+  entryRequested?: boolean; // A 상태에서 유저가 "입장"을 눌렀는지 여부
+}
+
+/**
+ * A(WAITING)에서 라운지 입장이 가능한 조건 — 기획서 2.2의 B 진입 조건과 동일하다.
+ *
+ * 전이 자체(evaluateNextState)와 분리해 둔 이유: 대기 화면은 조건을 만족해도
+ * 곧바로 넘어가지 않고 "입장 가능" 상태를 보여준 뒤 유저가 직접 입장하기
+ * 때문에, UI가 "지금 입장할 수 있는가"를 전이와 별개로 물어봐야 한다.
+ * 조건이 두 군데로 갈라지지 않도록 evaluateNextState도 이 함수를 쓴다.
+ */
+export function canEnterLounge(batteryLevel: number, isCharging: boolean): boolean {
+  return batteryLevel <= 10 && !isCharging;
 }
 
 export function evaluateNextState(input: StateMachineInput): GameState {
@@ -53,7 +66,9 @@ export function evaluateNextState(input: StateMachineInput): GameState {
 
   switch (current) {
     case "WAITING":
-      if (batteryLevel <= 10 && !isCharging) return "LOUNGE";
+      // 조건을 만족해도 자동 입장하지 않는다 — 대기 화면에서 "입장 가능"을
+      // 보여주고, 유저가 직접 입장을 눌렀을 때만(entryRequested) 넘어간다.
+      if (canEnterLounge(batteryLevel, isCharging) && input.entryRequested) return "LOUNGE";
       return "WAITING";
 
     case "LOUNGE":

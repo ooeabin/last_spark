@@ -1,11 +1,18 @@
 {
   "common": {
     "appName": "最後の灯",
-    "slogan": "電源が切れる前、一番熱く燃える10分"
+    "slogan": "電源が切れる前、一番熱く燃える10分",
+    "spritePending": "キャラクター準備中"
   },
   "waiting": {
     "batteryLabel": "バッテリー残量 {{level}}%",
     "enterIn": "入場まであと{{percent}}%",
+    "readyTitle": "入場できます",
+    "readyHint": "ラウンジがあなたを待っています",
+    "enterCta": "ラウンジに入る",
+    "waitingTitle": "待機中",
+    "waitingHint": "バッテリーが10%以下になると入場できます",
+    "chargingHint": "充電中は入場できません",
     "gravestoneGalleryTitle": "墓標ギャラリー",
     "hallOfFameTitle": "殿堂"
   },

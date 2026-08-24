@@ -1,11 +1,18 @@
 {
   "common": {
     "appName": "Última Chispa",
-    "slogan": "Brilla intensamente antes de que tu teléfono muera"
+    "slogan": "Brilla intensamente antes de que tu teléfono muera",
+    "spritePending": "Personaje en preparación"
   },
   "waiting": {
     "batteryLabel": "Batería {{level}}%",
     "enterIn": "{{percent}}% para poder entrar",
+    "readyTitle": "Listo para entrar",
+    "readyHint": "El salón te está esperando",
+    "enterCta": "Entrar al salón",
+    "waitingTitle": "En espera",
+    "waitingHint": "Podrás entrar cuando la batería baje al 10% o menos",
+    "chargingHint": "No puedes entrar mientras se carga",
     "gravestoneGalleryTitle": "Galería de Lápidas",
     "hallOfFameTitle": "Salón de la Fama"
   },

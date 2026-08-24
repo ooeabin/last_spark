@@ -1,11 +1,18 @@
 {
   "common": {
     "appName": "마지막 불꽃",
-    "slogan": "폰이 꺼지기 전, 가장 뜨겁게 타오르는 10분"
+    "slogan": "폰이 꺼지기 전, 가장 뜨겁게 타오르는 10분",
+    "spritePending": "캐릭터 준비 중"
   },
   "waiting": {
     "batteryLabel": "현재 배터리 {{level}}%",
     "enterIn": "입장까지 {{percent}}% 남음",
+    "readyTitle": "입장 가능",
+    "readyHint": "라운지가 당신을 기다리고 있습니다",
+    "enterCta": "라운지 입장",
+    "waitingTitle": "대기 중",
+    "waitingHint": "배터리가 10% 이하로 떨어지면 입장할 수 있어요",
+    "chargingHint": "충전 중에는 입장할 수 없어요",
     "gravestoneGalleryTitle": "명예의 묘비 갤러리",
     "hallOfFameTitle": "명예의 전당"
   },

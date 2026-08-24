@@ -24,7 +24,14 @@ export function Button({ label, variant = "pill", style, ...rest }: Props) {
       ]}
       {...rest}
     >
-      <Text style={[styles.label, variant === "outline" && { color: colors.textPrimary }]}>
+      <Text
+        style={[
+          styles.label,
+          // accent는 밝은 네온이라 흰 라벨을 얹으면 대비가 거의 없다 — 기능색
+          // 위에서는 배경색(근흑)을 라벨로 뒤집어 쓴다(DESIGN.md 2절 대비 규칙).
+          variant === "primary" && { color: colors.background },
+        ]}
+      >
         {label}
       </Text>
     </Pressable>
