@@ -72,7 +72,7 @@ V2에서 국가별 테마를 분리하고 싶다면 기획서 3.2의 3개국(KR/
 **사용자에게 보이는 UI는 `apps/mobile/src/shared/ui`의 공통 컴포넌트로만 조립한다.** raw `<Text>`/`<Pressable>`/`<View>`를 직접 스타일링해서 화면마다 새로 만들지 않는다(레이아웃 전용 `<View>` 래핑은 예외).
 
 - **텍스트**: `AppText` 컴포넌트만 사용한다. `variant` prop으로 크기·굵기를 지정한다 — `sectionTitle` · `featureHeading` · `bodyBold` · `body`(기본값) · `buttonUppercase` · `caption` · `captionBold` · `small` · `smallBold` · `micro` (전부 `apps/mobile/src/shared/theme/tokens.ts`의 `typography`에 정의됨). 필요한 크기/굵기 조합이 없다고 `style` prop으로 `fontSize`/`fontWeight`를 직접 덧대지 않는다 — 정말 없으면 `tokens.ts`의 `typography`에 옵션을 추가하도록 사용자에게 먼저 확인한다.
-- **버튼**: `Button` 컴포넌트만 사용한다(`label` prop, 네이티브 `<button>`이나 직접 스타일링한 `<Pressable>` 금지). `variant`는 `primary` · `pill`(기본값) · `outline` · `circular` 4종. 크기·형태 변경은 `variant`로만 하고, 새 형태가 필요하면 `Button.tsx`에 variant를 추가한다.
+- **버튼**: `Button` 컴포넌트만 사용한다(`label` prop, 네이티브 `<button>`이나 직접 스타일링한 `<Pressable>` 금지). `variant`는 `primary` · `primaryLarge` · `pill`(기본값) · `outline` · `circular` 5종. 크기·형태 변경은 `variant`로만 하고, 새 형태가 필요하면 `Button.tsx`에 variant를 추가한다. 화면의 주 CTA(입장·제출·분리처럼 그 화면에서 해야 할 단 하나의 행동)는 `primaryLarge`를 써서 다른 버튼과 위계를 만든다 — 한 화면에 둘 이상 두지 않는다.
 - **카드형 컨테이너**: `Card`(`elevated` prop으로 그림자 유무 조절).
 - **화면 최상위 래퍼**: 각 화면(대기/라운지/비상/제단/사망)은 `ScreenContainer`로 감싼다 — SafeArea·배경색·기본 패딩이 여기서 일괄 처리된다.
 - 새 공통 UI가 필요하면 먼저 `apps/mobile/src/shared/ui`에 이미 비슷한 게 있는지 확인하고, 없으면 거기에 추가한다(화면 하나에서만 쓰는 조합은 해당 화면/feature 안에 둬도 된다).

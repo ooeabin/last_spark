@@ -15,15 +15,13 @@ export function LoungeScreen() {
 
   return (
     <ScreenContainer>
-      <View style={{ gap: spacing.md, flex: 1 }}>
+      <View style={{ gap: spacing.sm, flex: 1 }}>
         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-          <AppText variant="sectionTitle">{t("lounge.title")}</AppText>
+          <BatteryStatusBar batteryLevel={batteryLevel} />
           <AppText variant="small" color={colors.textSecondary}>
-            {room ? `${room.roomId} · ${room.occupants}/${room.capacity}` : "연결 중..."}
+            {room ? `${room.roomId} · ${room.occupants}/${room.capacity}` : t("lounge.connecting")}
           </AppText>
         </View>
-
-        <BatteryStatusBar batteryLevel={batteryLevel} mode="lounge" />
 
         {/*
           라운지 씬(2D 패럴랙스 배경 + 도트 캐릭터, 기획서 2.1.1) 자리.
@@ -42,13 +40,9 @@ export function LoungeScreen() {
           }}
         >
           <AppText variant="caption" color={colors.borderLight}>
-            2D 라운지 씬 자리 — 배경/캐릭터 에셋 연동 전
+            {t("lounge.scenePending")}
           </AppText>
         </Card>
-
-        <AppText variant="small" color={colors.borderLight}>
-          {t("lounge.proximityChatHint")}
-        </AppText>
 
         <DevBatteryControls />
       </View>

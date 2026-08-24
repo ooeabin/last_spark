@@ -19,7 +19,7 @@ export function EmergencyScreen() {
         <AppText variant="body" color={colors.negative}>
           {t("emergency.timerLabel", { seconds: secondsLeft ?? 10 })}
         </AppText>
-        <Button label={t("emergency.detachCta")} variant="primary" onPress={detach} />
+        <Button label={t("emergency.detachCta")} variant="primaryLarge" onPress={detach} />
       </View>
     </ScreenContainer>
   );

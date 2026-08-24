@@ -7,7 +7,6 @@ import { colors, radius, spacing } from "@/shared/theme/tokens";
 
 interface Props {
   batteryLevel: number;
-  mode: "waiting" | "lounge";
 }
 
 const TIER_COLOR: Record<string, string> = {
@@ -16,8 +15,8 @@ const TIER_COLOR: Record<string, string> = {
   dying: colors.negative,
 };
 
-/** 기획서 4.1(대기) / 4.2-A(라운지 구간별 시각효과) 공통 배터리 상태 표시 */
-export function BatteryStatusBar({ batteryLevel, mode }: Props) {
+/** 라운지 배터리 표시 (기획서 4.2-A 구간별 시각효과) — 잔량이 곧 남은 시간이다 */
+export function BatteryStatusBar({ batteryLevel }: Props) {
   const { t } = useTranslation();
   const tier = getBatteryTier(batteryLevel);
   const tierColor = tier ? TIER_COLOR[tier.id] : colors.textSecondary;
@@ -34,9 +33,6 @@ export function BatteryStatusBar({ batteryLevel, mode }: Props) {
     >
       <AppText variant="caption" color={tierColor}>
         {t("waiting.batteryLabel", { level: batteryLevel })}
-        {mode === "waiting" && batteryLevel > 10
-          ? ` · ${t("waiting.enterIn", { percent: batteryLevel - 10 })}`
-          : ""}
       </AppText>
     </View>
   );

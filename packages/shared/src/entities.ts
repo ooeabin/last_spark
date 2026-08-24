@@ -5,10 +5,16 @@
 /**
  * 1% 방전 제단에서 남길 수 있는 유언 최대 길이 (기획서 4.2-C).
  * 클라이언트(`apps/mobile/src/features/altar-broadcast/model/useAltar.ts`)와
- * 서버(`apps/server/src/sockets/altar.handlers.ts`)가 각자 이 값을 로컬
- * 상수로 중복 정의하던 것을 여기 하나로 합쳤다 — 값을 바꿀 땐 여기만 고치면 된다.
+ * 서버(`apps/server/src/sockets/altar.handlers.ts`)가 같은 값을 써야 하므로
+ * 여기 하나로 둔다 — 값을 바꿀 땐 여기만 고치면 된다.
  */
 export const MAX_ALTAR_MESSAGE_LENGTH = 30;
+
+/**
+ * 닉네임 최대 길이 (기획서 2.1 — 유저가 직접 수정 가능).
+ * `gravestones.nickname`이 VARCHAR(30)이므로 그보다 길어지면 안 된다.
+ */
+export const MAX_NICKNAME_LENGTH = 12;
 
 /** 묘비 및 유언장 아카이브 (`gravestones` 테이블) */
 export interface Gravestone {

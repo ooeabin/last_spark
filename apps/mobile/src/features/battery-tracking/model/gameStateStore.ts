@@ -11,6 +11,11 @@ interface GameStateStore {
    * 유언이 그대로 사라진다.
    */
   altarOpen: boolean;
+  /**
+   * 제단에서 실제로 제출한 유언. 사망 화면(E)의 묘비에 새겨야 하는데
+   * 제단 화면은 그때 이미 언마운트된 뒤라, 화면이 아니라 세션 상태로 든다.
+   */
+  lastWords: string | null;
 
   setBatteryLevel: (level: number) => void;
   setCharging: (charging: boolean) => void;
@@ -18,6 +23,8 @@ interface GameStateStore {
   enterLounge: () => void;
   openAltar: () => void;
   closeAltar: () => void;
+  /** 제단에서 유언을 제출했을 때 — 사망 후 묘비에 새겨진다 */
+  setLastWords: (message: string) => void;
   /** 서버로부터 traitor:execute 수신 시 즉시 DEAD로 강제 전이 */
   forceExecuted: () => void;
   /** 서버로부터 emergency:cancel 수신 시 LOUNGE로 복귀 */
@@ -33,6 +40,7 @@ export const useGameStateStore = create<GameStateStore>((set, get) => ({
   batteryLevel: 15,
   isCharging: false,
   altarOpen: false,
+  lastWords: null,
 
   setBatteryLevel: (level) => {
     const clamped = Math.max(0, Math.min(100, level));
@@ -64,6 +72,7 @@ export const useGameStateStore = create<GameStateStore>((set, get) => ({
   },
 
   openAltar: () => set({ altarOpen: true }),
+  setLastWords: (message) => set({ lastWords: message }),
   closeAltar: () => {
     // 제단을 닫는 순간 보류됐던 상태 전이를 다시 평가한다(배터리가 그새 0이 됐을 수 있음).
     const { gameState, batteryLevel, isCharging } = get();
@@ -105,6 +114,13 @@ export const useGameStateStore = create<GameStateStore>((set, get) => ({
   },
 
   resetAfterDeath: (nextBatteryLevel = 100) => {
-    set({ gameState: "WAITING", batteryLevel: nextBatteryLevel, isCharging: true, altarOpen: false });
+    // 새 세션이므로 지난 판의 유언은 지운다.
+    set({
+      gameState: "WAITING",
+      batteryLevel: nextBatteryLevel,
+      isCharging: true,
+      altarOpen: false,
+      lastWords: null,
+    });
   },
 }));

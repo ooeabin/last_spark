@@ -5,6 +5,7 @@ import { AppText, Card } from "@/shared/ui";
 import { colors, radius, spacing } from "@/shared/theme/tokens";
 
 interface Props {
+  /** 표시할 캐릭터. 스프라이트가 들어오기 전까지는 자리표시자가 같아 아직 읽지 않는다. */
   charId: string;
   /** 캐릭터 아래에 함께 보여줄 닉네임(없으면 캐릭터만) */
   nickname?: string;
@@ -17,6 +18,8 @@ interface Props {
  * PixelLab으로 제작할 예정이라 지금은 에셋이 없다. 에셋이 들어오면 이
  * 컴포넌트 내부만 react-native-skia Canvas(charId → 스프라이트 시트 매핑)로
  * 교체하면 되고, 호출부는 charId만 넘기므로 손댈 필요가 없다.
+ *
+ * 깊이는 테두리가 아니라 그림자로 준다(DESIGN.md 7절 "raw gray border 노출 금지").
  */
 export function CharacterSprite({ charId, nickname }: Props) {
   const { t } = useTranslation();
@@ -26,25 +29,19 @@ export function CharacterSprite({ charId, nickname }: Props) {
       <Card
         elevated
         style={{
-          width: 140,
-          height: 140,
+          width: 180,
+          height: 180,
           borderRadius: radius.panel,
-          borderWidth: 1,
-          borderColor: colors.border,
           alignItems: "center",
           justifyContent: "center",
-          gap: spacing.xs,
         }}
       >
-        <AppText variant="captionBold" color={colors.textSecondaryBright}>
-          {charId}
-        </AppText>
-        <AppText variant="micro" color={colors.textSecondary}>
+        <AppText variant="small" color={colors.textSecondary}>
           {t("common.spritePending")}
         </AppText>
       </Card>
 
-      {nickname ? <AppText variant="captionBold">{nickname}</AppText> : null}
+      {nickname ? <AppText variant="bodyBold">{nickname}</AppText> : null}
     </View>
   );
 }

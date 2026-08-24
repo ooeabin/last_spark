@@ -1,11 +1,13 @@
 import { create } from "zustand";
+import { MAX_NICKNAME_LENGTH } from "@last-spark/shared";
 import { generateNickname } from "./nickname";
 import { rollCharacter } from "./characterGacha";
-import i18n from "@/shared/i18n";
 
 interface PlayerIdentity {
   charId: string;
   nickname: string;
+  /** 유저가 대기 화면에서 닉네임을 직접 바꾼다(기획서 2.1) */
+  setNickname: (nickname: string) => void;
   /** 캐릭터를 다시 뽑는다(가챠 재시도 — 상점 연동 전까지는 개발용) */
   reroll: () => void;
 }
@@ -18,6 +20,7 @@ interface PlayerIdentity {
  */
 export const usePlayerIdentity = create<PlayerIdentity>((set) => ({
   charId: rollCharacter(),
-  nickname: generateNickname(i18n.language),
-  reroll: () => set({ charId: rollCharacter(), nickname: generateNickname(i18n.language) }),
+  nickname: generateNickname(),
+  setNickname: (nickname) => set({ nickname: nickname.slice(0, MAX_NICKNAME_LENGTH) }),
+  reroll: () => set({ charId: rollCharacter(), nickname: generateNickname() }),
 }));

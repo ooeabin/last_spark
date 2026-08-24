@@ -1,25 +1,22 @@
 {
   "common": {
-    "appName": "Última Chispa",
-    "slogan": "Brilla intensamente antes de que tu teléfono muera",
     "spritePending": "Personaje en preparación"
   },
   "waiting": {
     "batteryLabel": "Batería {{level}}%",
     "enterIn": "{{percent}}% para poder entrar",
-    "readyTitle": "Listo para entrar",
-    "readyHint": "El salón te está esperando",
-    "enterCta": "Entrar al salón",
-    "waitingTitle": "En espera",
-    "waitingHint": "Podrás entrar cuando la batería baje al 10% o menos",
+    "readyTitle": "Ready",
+    "enterCta": "Enter",
+    "waitingTitle": "Waiting...",
     "chargingHint": "No puedes entrar mientras se carga",
-    "gravestoneGalleryTitle": "Galería de Lápidas",
-    "hallOfFameTitle": "Salón de la Fama"
+    "gravestoneGalleryTitle": "Últimas Palabras",
+    "hallOfFameTitle": "Salón de la Fama",
+    "gravestoneEmpty": "Aún no hay últimas palabras"
   },
   "lounge": {
-    "title": "Sala",
-    "proximityChatHint": "Solo los jugadores cercanos ven tu chat",
-    "cheersToast": "¡Salud!"
+    "cheersToast": "¡Salud!",
+    "scenePending": "Escena del salón en preparación",
+    "connecting": "Connecting..."
   },
   "emergency": {
     "title": "¡Emergencia! Carga detectada",
@@ -27,14 +24,11 @@
     "timerLabel": "Expulsión en {{seconds}}s"
   },
   "altar": {
-    "title": "Altar de la Descarga",
     "placeholder": "Tus últimas palabras (máx. 30 caracteres)",
-    "submitCta": "Dejar últimas palabras",
-    "charCount": "{{count}}/30"
+    "submitCta": "Dejar últimas palabras"
   },
   "death": {
     "title": "Tu teléfono se apagó",
-    "graveCreated": "Se creó una lápida",
     "shareCta": "Compartir tarjeta de resultado"
   },
   "shop": {

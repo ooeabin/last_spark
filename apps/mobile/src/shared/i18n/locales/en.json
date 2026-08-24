@@ -1,25 +1,22 @@
 {
   "common": {
-    "appName": "Last Spark",
-    "slogan": "Burn bright before your phone dies",
     "spritePending": "Character coming soon"
   },
   "waiting": {
     "batteryLabel": "Battery {{level}}%",
     "enterIn": "{{percent}}% until you can enter",
-    "readyTitle": "Ready to enter",
-    "readyHint": "The lounge is waiting for you",
-    "enterCta": "Enter the lounge",
-    "waitingTitle": "Standing by",
-    "waitingHint": "You can enter once the battery drops to 10% or below",
+    "readyTitle": "Ready",
+    "enterCta": "Enter",
+    "waitingTitle": "Waiting...",
     "chargingHint": "You can't enter while charging",
-    "gravestoneGalleryTitle": "Gravestone Gallery",
-    "hallOfFameTitle": "Hall of Fame"
+    "gravestoneGalleryTitle": "Last Words",
+    "hallOfFameTitle": "Hall of Fame",
+    "gravestoneEmpty": "No last words yet"
   },
   "lounge": {
-    "title": "Lounge",
-    "proximityChatHint": "Only nearby players can see your chat",
-    "cheersToast": "Cheers!"
+    "cheersToast": "Cheers!",
+    "scenePending": "Lounge scene coming soon",
+    "connecting": "Connecting..."
   },
   "emergency": {
     "title": "Emergency! Charging detected",
@@ -27,14 +24,11 @@
     "timerLabel": "Ejected in {{seconds}}s"
   },
   "altar": {
-    "title": "Altar of Depletion",
     "placeholder": "Your last words (max 30 chars)",
-    "submitCta": "Leave last words",
-    "charCount": "{{count}}/30"
+    "submitCta": "Leave last words"
   },
   "death": {
     "title": "Your phone died",
-    "graveCreated": "A gravestone was created",
     "shareCta": "Share your result card"
   },
   "shop": {

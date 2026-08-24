@@ -1,7 +1,9 @@
 import React, { useRef } from "react";
 import { View } from "react-native";
 import { captureRef } from "react-native-view-shot";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/shared/ui";
+import { spacing } from "@/shared/theme/tokens";
 
 interface Props {
   /** 캡처 대상(9:16 결과 카드) 참조를 이 컴포넌트가 감싼 children으로 받는다 */
@@ -15,6 +17,7 @@ interface Props {
  * 아직 없다 — 지금은 캡처까지만 동작한다.
  */
 export function ShareCardButton({ children, onShared }: Props) {
+  const { t } = useTranslation();
   const viewRef = useRef<View>(null);
 
   const handleShare = async () => {
@@ -24,11 +27,11 @@ export function ShareCardButton({ children, onShared }: Props) {
   };
 
   return (
-    <View>
+    <View style={{ gap: spacing.md }}>
       <View ref={viewRef} collapsable={false}>
         {children}
       </View>
-      <Button label="결과 카드 공유하기" variant="primary" onPress={handleShare} />
+      <Button label={t("death.shareCta")} variant="primaryLarge" onPress={handleShare} />
     </View>
   );
 }

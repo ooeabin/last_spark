@@ -7,7 +7,13 @@ import { AppText, Card } from "@/shared/ui";
 import { colors, spacing } from "@/shared/theme/tokens";
 
 /** 명예의 묘비 갤러리 (기획서 4.1) — 자국 유저들의 유언 목록, 좋아요 정렬 */
-export function GravestoneGallery({ countryCode }: { countryCode: string }) {
+interface Props {
+  countryCode: string;
+  /** 자체 영역 안에서 스크롤할지 (바깥이 스크롤을 맡으면 false) */
+  scrollEnabled?: boolean;
+}
+
+export function GravestoneGallery({ countryCode, scrollEnabled = false }: Props) {
   const { t } = useTranslation();
   const [gravestones, setGravestones] = useState<Gravestone[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,22 +33,22 @@ export function GravestoneGallery({ countryCode }: { countryCode: string }) {
   }, [countryCode]);
 
   return (
-    <View>
+    <View style={{ flex: scrollEnabled ? 1 : undefined }}>
       <AppText variant="featureHeading" style={{ marginBottom: spacing.sm }}>
         {t("waiting.gravestoneGalleryTitle")}
       </AppText>
       {loading && <AppText variant="caption">...</AppText>}
       {!loading && gravestones.length === 0 && (
         <AppText variant="caption" color={colors.textSecondary}>
-          아직 이 라운지에서 방전된 사람이 없어요.
+          {t("waiting.gravestoneEmpty")}
         </AppText>
       )}
       <FlatList
         data={gravestones}
         keyExtractor={(item) => item.id}
-        scrollEnabled={false}
+        scrollEnabled={scrollEnabled}
         renderItem={({ item }) => (
-          <Card style={{ marginBottom: spacing.sm }}>
+          <Card style={{ marginBottom: spacing.sm, backgroundColor: colors.surfaceAlt }}>
             <AppText variant="bodyBold">{item.nickname}</AppText>
             <AppText variant="caption" color={colors.textSecondary}>
               "{item.lastWords}"

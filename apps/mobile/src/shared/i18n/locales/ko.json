@@ -1,25 +1,22 @@
 {
   "common": {
-    "appName": "마지막 불꽃",
-    "slogan": "폰이 꺼지기 전, 가장 뜨겁게 타오르는 10분",
     "spritePending": "캐릭터 준비 중"
   },
   "waiting": {
     "batteryLabel": "현재 배터리 {{level}}%",
     "enterIn": "입장까지 {{percent}}% 남음",
-    "readyTitle": "입장 가능",
-    "readyHint": "라운지가 당신을 기다리고 있습니다",
-    "enterCta": "라운지 입장",
-    "waitingTitle": "대기 중",
-    "waitingHint": "배터리가 10% 이하로 떨어지면 입장할 수 있어요",
+    "readyTitle": "Ready",
+    "enterCta": "Enter",
+    "waitingTitle": "Waiting...",
     "chargingHint": "충전 중에는 입장할 수 없어요",
-    "gravestoneGalleryTitle": "명예의 묘비 갤러리",
-    "hallOfFameTitle": "명예의 전당"
+    "gravestoneGalleryTitle": "유언",
+    "hallOfFameTitle": "명예의 전당",
+    "gravestoneEmpty": "아직 남겨진 유언이 없어요"
   },
   "lounge": {
-    "title": "라운지",
-    "proximityChatHint": "가까운 사람에게만 채팅이 보여요",
-    "cheersToast": "건배!"
+    "cheersToast": "건배!",
+    "scenePending": "라운지 화면 준비 중",
+    "connecting": "Connecting..."
   },
   "emergency": {
     "title": "비상! 충전이 감지되었습니다",
@@ -27,14 +24,11 @@
     "timerLabel": "{{seconds}}초 후 강제 퇴장"
   },
   "altar": {
-    "title": "방전 제단",
     "placeholder": "마지막으로 남길 말 (최대 30자)",
-    "submitCta": "유언 남기기",
-    "charCount": "{{count}}/30"
+    "submitCta": "유언 남기기"
   },
   "death": {
     "title": "방전되었습니다",
-    "graveCreated": "묘비가 생성되었습니다",
     "shareCta": "결과 카드 공유하기"
   },
   "shop": {

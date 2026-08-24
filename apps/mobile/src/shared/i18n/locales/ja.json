@@ -1,25 +1,22 @@
 {
   "common": {
-    "appName": "最後の灯",
-    "slogan": "電源が切れる前、一番熱く燃える10分",
     "spritePending": "キャラクター準備中"
   },
   "waiting": {
     "batteryLabel": "バッテリー残量 {{level}}%",
     "enterIn": "入場まであと{{percent}}%",
-    "readyTitle": "入場できます",
-    "readyHint": "ラウンジがあなたを待っています",
-    "enterCta": "ラウンジに入る",
-    "waitingTitle": "待機中",
-    "waitingHint": "バッテリーが10%以下になると入場できます",
+    "readyTitle": "Ready",
+    "enterCta": "Enter",
+    "waitingTitle": "Waiting...",
     "chargingHint": "充電中は入場できません",
-    "gravestoneGalleryTitle": "墓標ギャラリー",
-    "hallOfFameTitle": "殿堂"
+    "gravestoneGalleryTitle": "遺言",
+    "hallOfFameTitle": "殿堂",
+    "gravestoneEmpty": "まだ遺言はありません"
   },
   "lounge": {
-    "title": "ラウンジ",
-    "proximityChatHint": "近くの人にだけチャットが見えます",
-    "cheersToast": "乾杯!"
+    "cheersToast": "乾杯!",
+    "scenePending": "ラウンジ画面 準備中",
+    "connecting": "Connecting..."
   },
   "emergency": {
     "title": "緊急事態!充電が検知されました",
@@ -27,14 +24,11 @@
     "timerLabel": "{{seconds}}秒後に強制退場"
   },
   "altar": {
-    "title": "放電の祭壇",
     "placeholder": "最後の言葉 (最大30文字)",
-    "submitCta": "遺言を残す",
-    "charCount": "{{count}}/30"
+    "submitCta": "遺言を残す"
   },
   "death": {
     "title": "電源が切れました",
-    "graveCreated": "墓標が作成されました",
     "shareCta": "結果カードをシェア"
   },
   "shop": {
