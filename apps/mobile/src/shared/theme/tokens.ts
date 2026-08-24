@@ -2,9 +2,8 @@
  * 디자인 토큰 — docs/DESIGN.md(Spotify 스타일 다크 디자인 시스템)를 기반으로 한다.
  *
  * DESIGN.md의 구조(근흑 배경 단계, 알약/원형 버튼, 두꺼운 그림자, 콤팩트한
- * 타이포 스케일, "기능색은 단 하나"라는 원칙)는 그대로 가져오되, 브랜드
- * 컬러(Spotify Green)는 이 프로젝트 고유의 네온 사이버펑크 톤으로
- * 대체했다 — 기획서 3.1 "사이버펑크 폐허 바" 테마와 맞추기 위함이다.
+ * 타이포 스케일, "기능색은 단 하나"라는 원칙)를 그대로 따르되, 기능색만은
+ * 기획서 3.1 "사이버펑크 폐허 바" 테마에 맞춰 네온 톤으로 잡는다.
  *
  * accent 값은 placeholder다. 기획서 9.4 "아트 디렉션 고정" 단계(색상
  * 팔레트 5~6색 확정)가 끝나면 이 파일의 accent/neon 값을 실제 확정
@@ -98,9 +97,9 @@ export const typography = {
   bodyBold: { fontSize: 16, fontWeight: "700" as const, lineHeight: 16 * 1.4 },
   body: { fontSize: 16, fontWeight: "400" as const, lineHeight: 16 * 1.4 },
   /**
-   * DESIGN.md 원안의 letterSpacing 1.4는 영문 대문자 라벨(Spotify 스타일) 기준값이라
-   * 한글 라벨에 그대로 적용하면 자간이 부자연스럽게 벌어져 보인다(2026-08 UX 피드백).
-   * textTransform: uppercase는 한글엔 영향 없으니 그대로 두되, letterSpacing만 줄임.
+   * DESIGN.md 원안의 letterSpacing 1.4는 영문 대문자 라벨(Spotify 스타일)
+   * 기준값이라 한글 라벨에 그대로 적용하면 자간이 부자연스럽게 벌어진다.
+   * textTransform: uppercase는 한글엔 영향이 없어 그대로 두고, letterSpacing만 줄인다.
    */
   buttonUppercase: {
     fontSize: 14,

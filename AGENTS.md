@@ -25,9 +25,11 @@ last-spark/
 
 `packages/shared/src/state-machine.ts`의 `evaluateNextState()`가 유일한 전이 로직 소스다. WAITING → LOUNGE → EMERGENCY / LAST_RITES → DEAD. mobile 스토어(`apps/mobile/src/features/battery-tracking/model/gameStateStore.ts`)나 서버 룸 로직에 전이 조건을 다시 구현하지 말 것 — 항상 이 함수를 통해서만 판정한다.
 
+단, WAITING → LOUNGE만은 조건 충족만으로 전이하지 않는다 — 대기 화면에서 유저가 입장 버튼을 눌러야(`entryRequested`) 넘어간다. "지금 입장할 수 있는가"만 묻는 UI는 같은 파일의 `canEnterLounge()`를 쓴다.
+
 ## 소켓 이벤트 · 공유 상수는 packages/shared가 기준
 
-`packages/shared/src/socket-events.ts`에 클라이언트-서버 이벤트 타입이 전부 있다. 새 이벤트 추가 순서: shared 타입 → 서버 핸들러(`apps/server/src/sockets/`) → 클라이언트 훅(`apps/mobile/src/features/`). 기획서 5.2 원표에 없던 `lounge:joined`/`altar:submit`/`emergency:detach`/`presence:update` 4개가 구현 과정에서 추가됐다 — 이유는 SKILL.md 참고. 클라이언트·서버 양쪽이 똑같이 지켜야 하는 숫자 제약(예: 유언 30자 제한 `MAX_ALTAR_MESSAGE_LENGTH`)도 로컬 상수로 중복 정의하지 말고 `packages/shared/src/entities.ts`에서 가져다 쓴다.
+`packages/shared/src/socket-events.ts`에 클라이언트-서버 이벤트 타입이 전부 있다. 새 이벤트 추가 순서: shared 타입 → 서버 핸들러(`apps/server/src/sockets/`) → 클라이언트 훅(`apps/mobile/src/features/`). C→S 요청과 S→C 결과는 별개 이벤트로 나눈다(`altar:submit`→`altar:broadcast` 등) — 서버가 검증한 뒤 뿌려야 하기 때문이다. 클라이언트·서버 양쪽이 똑같이 지켜야 하는 숫자 제약(예: 유언 30자 제한 `MAX_ALTAR_MESSAGE_LENGTH`)도 로컬 상수로 중복 정의하지 말고 `packages/shared/src/entities.ts`에서 가져다 쓴다.
 
 ## UI는 shared/ui + tokens.ts가 기준
 
@@ -35,8 +37,12 @@ last-spark/
 
 ## 지키면 안 되는 방향 전환
 
-- **아트 디렉션은 3D가 아니라 2D**(데이브 더 다이브 스타일: 정적/패럴랙스 배경 + 도트 캐릭터, 고정 시점). react-three-fiber 같은 3D 스택은 검토 후 철회된 이력이 있다 — 다시 제안하기 전에 `docs/기획서.md` 2.1.1과 SKILL.md "아트 디렉션 — 3D 아님" 절부터 확인할 것.
-- **룸 매칭은 국가별로 분리, 비주얼 테마는 전 국가 통일.** 이 둘을 섞어서 "단일 글로벌 룸"으로 되돌리지 말 것 — 과거에 한 번 잘못 해석했다가 정정된 지점이다.
+- **아트 디렉션은 3D가 아니라 2D**(데이브 더 다이브 스타일: 정적/패럴랙스 배경 + 도트 캐릭터, 고정 시점). react-three-fiber 같은 3D 스택은 엔지니어링 비용 때문에 채택하지 않는다 — 다시 제안하기 전에 `docs/기획서.md` 2.1.1과 SKILL.md "아트 디렉션 — 3D 아님" 절부터 확인할 것.
+- **룸 매칭은 국가별로 분리, 비주얼 테마는 전 국가 통일.** 이 둘을 섞어서 "단일 글로벌 룸"으로 되돌리지 말 것.
+
+## 문서는 현재 사양만 적는다
+
+제품 동작(상태머신 전이·화면 흐름·진입 조건·소켓 이벤트 등)이 바뀌면 `docs/기획서.md`를 반드시 같이 고친다 — 기획서 → SKILL.md/AGENTS.md → 코드 순. 그리고 "원래는 X였는데 바꿨다" 같은 변경 이력은 문서·README·코드 주석 어디에도 남기지 않는다(이력은 git에 있다). "왜 이렇게 되어 있는가"는 과거 사건이 아니라 현재의 인과로 쓴다.
 
 ## 커밋 메시지
 

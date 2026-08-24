@@ -35,6 +35,6 @@ pnpm --filter @last-spark/server prisma:migrate
 - Zod 기반 페이로드 스키마 검증(현재는 타입만 있고 런타임 검증 없음)
 - 배포 파이프라인(Railway/Fly.io) — 실행체크리스트 2단계 참고
 
-## 이벤트 계약과 기획서 5.2의 차이
+## 이벤트 계약
 
-`packages/shared/src/socket-events.ts`에 `lounge:joined`, `altar:submit`, `emergency:detach`, `presence:update` 4개 이벤트가 추가돼 있습니다. 기획서 5.2 원표에는 없던 이벤트인데, 실제로 동작하려면 클라이언트→서버 확인 응답이나 명시적 트리거가 필요해서 구현 단계에서 보충한 것입니다. 상세 이유는 `.claude/skills/last-spark-domain/SKILL.md`를 참고하세요.
+소켓 이벤트의 이름과 페이로드는 `packages/shared/src/socket-events.ts`가 단일 소스입니다(기획서 5.2). 이벤트를 추가하거나 바꿀 때는 이 파일부터 고치고, 그다음 서버 핸들러 → 클라이언트 훅 순으로 맞춥니다.

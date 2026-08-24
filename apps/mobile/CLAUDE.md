@@ -28,7 +28,7 @@ src/
 
 ## 디자인 시스템
 
-`src/shared/theme/tokens.ts`가 `docs/DESIGN.md`(Spotify 스타일 다크 디자인 시스템)를 이 프로젝트에 맞게 옮긴 것이다. 근흑 배경 단계(`background`/`surface`/`surfaceAlt`), 단일 기능색(`accent`), 알약/원형 버튼, 두꺼운 그림자, 콤팩트한 타이포 스케일 — 구조는 DESIGN.md 그대로고 색상값(`accent`)만 사이버펑크 톤 placeholder로 바꿨다. 기획서 9.4 "아트 디렉션 고정" 단계에서 실제 팔레트(5~6색)가 확정되면 `tokens.ts`의 `colors.accent`/`colors.accentBorder`만 바꾸면 된다 — 컴포넌트 코드는 손댈 필요 없음.
+`src/shared/theme/tokens.ts`가 `docs/DESIGN.md`(Spotify 스타일 다크 디자인 시스템)를 이 프로젝트에 맞게 옮긴 것이다. 근흑 배경 단계(`background`/`surface`/`surfaceAlt`), 단일 기능색(`accent`), 알약/원형 버튼, 두꺼운 그림자, 콤팩트한 타이포 스케일 — 구조는 DESIGN.md를 그대로 따르고, `accent` 색상값만 사이버펑크 톤 placeholder다. 기획서 9.4 "아트 디렉션 고정" 단계에서 실제 팔레트(5~6색)가 확정되면 `tokens.ts`의 `colors.accent`/`colors.accentBorder`만 바꾸면 된다 — 컴포넌트 코드는 손댈 필요 없음.
 
 새 UI를 만들 때는 색상 하드코딩 대신 `@/shared/theme/tokens`의 값을 쓰고, 텍스트는 `AppText`, 버튼은 `Button`(primary/pill/outline/circular variant) 등 `@/shared/ui`의 공통 컴포넌트를 우선 재사용한다. 강제 규칙(허용된 variant/토큰 목록, HEX 리터럴 금지 등)의 상세는 `.claude/skills/last-spark-domain/SKILL.md`의 "UI 컴포넌트 규칙"·"색상 규칙" 절 참고.
 
@@ -36,7 +36,7 @@ src/
 
 - `useRealBatteryTracking`(`src/features/battery-tracking`)이 앱 루트(`StateMachineRoot`)에서 항상 실행되며 `expo-battery` 실측값으로 스토어를 갱신한다
 - `__DEV__` 빌드에서만 `DevBatteryControls`가 렌더링되어 수동으로 배터리/충전 상태를 조작할 수 있다 — 시뮬레이터에는 배터리 센서가 없어서 필수
-- 제단(altar) 화면에 있는 동안은 `gameStateStore.altarOpen`이 true라 배터리 변화가 와도 상태 전이가 보류된다 — 웹 프로토타입 개발 중 "유언 작성 도중 방전으로 내용이 날아가는" 레이스 컨디션을 겪은 적이 있어서 넣은 안전장치다. 이 플래그를 건드리는 코드를 새로 짤 땐 이 이유를 기억할 것.
+- 제단(altar) 화면에 있는 동안은 `gameStateStore.altarOpen`이 true라 배터리 변화가 와도 상태 전이가 보류된다. 이게 없으면 유언 작성 도중 방전 전이가 일어나 화면이 바뀌면서 입력 중이던 내용이 사라진다 — 이 플래그를 건드리는 코드를 새로 짤 땐 이 이유를 기억할 것.
 
 ## 실행
 
