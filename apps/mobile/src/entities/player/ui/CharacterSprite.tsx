@@ -1,47 +1,71 @@
 import React from "react";
 import { View } from "react-native";
-import { useTranslation } from "react-i18next";
-import { AppText, Card } from "@/shared/ui";
-import { colors, radius, spacing } from "@/shared/theme/tokens";
+import { Canvas, Rect } from "@shopify/react-native-skia";
+import { colors } from "@/shared/theme/tokens";
 
 interface Props {
   /** 표시할 캐릭터. 스프라이트가 들어오기 전까지는 자리표시자가 같아 아직 읽지 않는다. */
   charId: string;
-  /** 캐릭터 아래에 함께 보여줄 닉네임(없으면 캐릭터만) */
-  nickname?: string;
+  /** 도트 한 칸의 픽셀 크기 */
+  scale?: number;
 }
 
 /**
- * 플레이어 캐릭터 표시 — 아직 자리표시자다.
+ * 전신 도트 캐릭터 (기획서 2.1.1 — 데이브 더 다이브 스타일).
  *
- * char_01~char_12 도트 스프라이트는 기획서 9.4 "아트 디렉션 고정" 단계에서
- * PixelLab으로 제작할 예정이라 지금은 에셋이 없다. 에셋이 들어오면 이
- * 컴포넌트 내부만 react-native-skia Canvas(charId → 스프라이트 시트 매핑)로
- * 교체하면 되고, 호출부는 charId만 넘기므로 손댈 필요가 없다.
- *
- * 깊이는 테두리가 아니라 그림자로 준다(DESIGN.md 7절 "raw gray border 노출 금지").
+ * char_01~char_12 스프라이트는 기획서 9.4 에셋 단계에서 PixelLab으로 제작한다.
+ * 그 전까지는 같은 도트 그리드를 코드로 그려 실루엣만 세워둔다 — 배경을 깐
+ * 액자가 아니라 캐릭터 자체가 서 있어야 라운지에 놓았을 때와 같은 그림이 된다.
+ * 에셋이 들어오면 이 파일의 GRID를 스프라이트 시트 렌더링으로 바꾸면 된다.
  */
-export function CharacterSprite({ charId, nickname }: Props) {
-  const { t } = useTranslation();
+
+/** 12 x 18 도트 그리드. '#'는 몸, '.'는 투명 */
+const GRID = [
+  "....####....",
+  "...######...",
+  "..########..",
+  "..##.##.##..",
+  "..########..",
+  "...#....#...",
+  "....####....",
+  "...######...",
+  "..########..",
+  ".###.##.###.",
+  ".###.##.###.",
+  "..#######...",
+  "...######...",
+  "...##..##...",
+  "...##..##...",
+  "...##..##...",
+  "..###..###..",
+  "..###..###..",
+];
+
+const COLS = GRID[0].length;
+const ROWS = GRID.length;
+
+export function CharacterSprite({ charId, scale = 10 }: Props) {
+  const width = COLS * scale;
+  const height = ROWS * scale;
 
   return (
-    <View style={{ alignItems: "center", gap: spacing.sm }}>
-      <Card
-        elevated
-        style={{
-          width: 180,
-          height: 180,
-          borderRadius: radius.panel,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <AppText variant="small" color={colors.textSecondary}>
-          {t("common.spritePending")}
-        </AppText>
-      </Card>
-
-      {nickname ? <AppText variant="bodyBold">{nickname}</AppText> : null}
+    <View style={{ width, height }}>
+      <Canvas style={{ flex: 1 }}>
+        {GRID.flatMap((row, y) =>
+          row.split("").map((cell, x) =>
+            cell === "#" ? (
+              <Rect
+                key={`${charId}-${x}-${y}`}
+                x={x * scale}
+                y={y * scale}
+                width={scale}
+                height={scale}
+                color={colors.textSecondaryBright}
+              />
+            ) : null,
+          ),
+        )}
+      </Canvas>
     </View>
   );
 }

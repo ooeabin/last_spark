@@ -1,7 +1,4 @@
 {
-  "common": {
-    "spritePending": "Character coming soon"
-  },
   "waiting": {
     "batteryLabel": "Battery {{level}}%",
     "enterIn": "{{percent}}% until you can enter",

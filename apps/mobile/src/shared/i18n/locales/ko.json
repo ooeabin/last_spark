@@ -1,7 +1,4 @@
 {
-  "common": {
-    "spritePending": "캐릭터 준비 중"
-  },
   "waiting": {
     "batteryLabel": "현재 배터리 {{level}}%",
     "enterIn": "입장까지 {{percent}}% 남음",

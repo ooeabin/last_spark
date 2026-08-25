@@ -1,7 +1,4 @@
 {
-  "common": {
-    "spritePending": "Personaje en preparación"
-  },
   "waiting": {
     "batteryLabel": "Batería {{level}}%",
     "enterIn": "{{percent}}% para poder entrar",
