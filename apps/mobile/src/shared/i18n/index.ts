@@ -22,6 +22,9 @@ i18n.use(initReactI18next).init({
   lng: detectLocale(),
   fallbackLng: DEFAULT_LOCALE,
   interpolation: { escapeValue: false },
+  // RN Hermes에는 Intl.PluralRules가 없어서 i18next 기본(v4) 복수형 처리가 에러를 낸다.
+  // 이 앱은 복수형 키를 쓰지 않으므로 Intl 비의존 방식인 v3로 고정한다.
+  compatibilityJSON: "v3",
 });
 
 export default i18n;
