@@ -6,10 +6,7 @@
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": true,
-    "splash": {
-      "backgroundColor": "#121212"
-    },
+    "backgroundColor": "#121212",
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.lastspark.app",
