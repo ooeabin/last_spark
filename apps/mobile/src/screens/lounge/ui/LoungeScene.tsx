@@ -3,6 +3,7 @@ import { View, StyleSheet, type LayoutChangeEvent } from "react-native";
 import { Canvas, Image as SkiaImage, useImage, FilterMode, MipmapMode } from "@shopify/react-native-skia";
 import { CAT_FRAME_W, CAT_FRAME_H } from "@/entities/player";
 import { useLocalMovement, useRemotePlayers, WORLD_WIDTH, WORLD_HEIGHT, getRoomAt } from "@/features/free-roam";
+import { CHAT_BUBBLE_RADIUS } from "@/features/proximity-chat";
 import { radius } from "@/shared/theme/tokens";
 import { PlayerAvatar } from "./PlayerAvatar";
 import { Joystick } from "./Joystick";
@@ -31,9 +32,13 @@ interface Props {
   /** 이번 세션 캐릭터 id */
   charId: string;
   nickname: string;
+  /** 근접 채팅 말풍선 — playerId → 메시지 (반경 필터는 이 씬이 좌표로 판단) */
+  bubbles: Record<string, string>;
+  /** 내 캐릭터 말풍선 (로컬 즉시 표시) */
+  myBubble: string | null;
 }
 
-export function LoungeScene({ charId: _charId, nickname }: Props) {
+export function LoungeScene({ charId: _charId, nickname, bubbles, myBubble }: Props) {
   const [size, setSize] = useState({ width: 0, height: 0 });
   const base = useImage(require("../../../../assets/background/room-base.png"));
   const wallDecor = useImage(require("../../../../assets/background/wall-decor.png"));
@@ -74,18 +79,25 @@ export function LoungeScene({ charId: _charId, nickname }: Props) {
         </Canvas>
       )}
 
-      {remotePlayers.map((p) => (
-        <PlayerAvatar
-          key={p.playerId}
-          x={p.x * WORLD_WIDTH - camX}
-          y={p.y * WORLD_HEIGHT - camY}
-          animation={p.animation}
-          frame={p.frame}
-          faceRight={p.faceRight}
-          nickname={p.nickname}
-          scale={AVATAR_SCALE}
-        />
-      ))}
+      {remotePlayers.map((p) => {
+        // 근접 채팅 (기획서 4.2-B): 반경 밖의 말풍선은 그리지 않는다
+        const wx = p.x * WORLD_WIDTH;
+        const wy = p.y * WORLD_HEIGHT;
+        const inRange = Math.hypot(wx - local.x, wy - local.y) <= CHAT_BUBBLE_RADIUS;
+        return (
+          <PlayerAvatar
+            key={p.playerId}
+            x={wx - camX}
+            y={wy - camY}
+            animation={p.animation}
+            frame={p.frame}
+            faceRight={p.faceRight}
+            nickname={p.nickname}
+            bubble={inRange ? bubbles[p.playerId] : null}
+            scale={AVATAR_SCALE}
+          />
+        );
+      })}
 
       <PlayerAvatar
         x={local.x - camX}
@@ -94,6 +106,7 @@ export function LoungeScene({ charId: _charId, nickname }: Props) {
         frame={local.frame}
         faceRight={local.faceRight}
         nickname={nickname}
+        bubble={myBubble}
         isSelf
         scale={AVATAR_SCALE}
       />

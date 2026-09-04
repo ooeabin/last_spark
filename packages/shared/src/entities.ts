@@ -16,6 +16,12 @@ export const MAX_ALTAR_MESSAGE_LENGTH = 30;
  */
 export const MAX_NICKNAME_LENGTH = 12;
 
+/**
+ * 근접 채팅 메시지 최대 길이 (기획서 4.2-B).
+ * 클라이언트 입력 제한과 서버 검증(`chat.handlers.ts`)이 같은 값을 써야 한다.
+ */
+export const MAX_CHAT_MESSAGE_LENGTH = 60;
+
 /** 묘비 및 유언장 아카이브 (`gravestones` 테이블) */
 export interface Gravestone {
   id: string; // UUID

@@ -74,6 +74,21 @@ export interface PlayerLeftPayload {
   playerId: string;
 }
 
+/** C → S : 근접 채팅 메시지 전송 요청 (서버 검증 후 chat:message로 룸에 송출) */
+export interface ChatSendPayload {
+  message: string; // 최대 MAX_CHAT_MESSAGE_LENGTH자
+}
+
+/**
+ * S → C : 같은 룸에 채팅 송출. 말풍선을 보여줄지(반경 150 이내, 기획서 4.2-B)는
+ * 수신 클라이언트가 이미 동기화된 상대 좌표로 판단한다 — 서버는 좌표를 저장하지 않는다.
+ */
+export interface ChatMessagePayload {
+  playerId: string;
+  nickname: string;
+  message: string;
+}
+
 /**
  * 클라이언트 → 서버 이벤트 맵.
  * socket.emit()의 이름/페이로드 타입을 여기서 강제한다.
@@ -84,6 +99,7 @@ export interface ClientToServerEvents {
   "battery:change": (payload: BatteryChangePayload) => void;
   "altar:submit": (payload: AltarSubmitPayload) => void;
   "emergency:detach": () => void; // 충전기 분리(생존) 신호
+  "chat:send": (payload: ChatSendPayload) => void;
 }
 
 /**
@@ -98,4 +114,5 @@ export interface ServerToClientEvents {
   "traitor:execute": (payload: TraitorExecutePayload) => void;
   "altar:broadcast": (payload: AltarBroadcastPayload) => void;
   "presence:update": (payload: PresenceUpdatePayload) => void;
+  "chat:message": (payload: ChatMessagePayload) => void;
 }

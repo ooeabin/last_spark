@@ -8,6 +8,7 @@ import { registerLoungeHandlers } from "./lounge.handlers";
 import { registerBatteryHandlers } from "./battery.handlers";
 import { registerEmergencyHandlers } from "./emergency.handlers";
 import { registerAltarHandlers } from "./altar.handlers";
+import { registerChatHandlers } from "./chat.handlers";
 
 type IOServer = Server<ClientToServerEvents, ServerToClientEvents>;
 type IOSocket = Socket<ClientToServerEvents, ServerToClientEvents>;
@@ -18,6 +19,7 @@ export function registerSocketHandlers(io: IOServer) {
     registerBatteryHandlers(io, socket);
     registerEmergencyHandlers(io, socket);
     registerAltarHandlers(io, socket);
+    registerChatHandlers(io, socket);
 
     socket.on("disconnect", async () => {
       const session = getSession(socket.id);

@@ -20,7 +20,9 @@
       "bar": "Bar Counter",
       "rest": "Rest Lounge",
       "memorial": "Memorial Room"
-    }
+    },
+    "chatPlaceholder": "Say something nearby…",
+    "chatSend": "Send"
   },
   "emergency": {
     "title": "Emergency! Charging detected",

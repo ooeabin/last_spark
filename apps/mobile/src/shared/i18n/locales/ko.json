@@ -20,7 +20,9 @@
       "bar": "바 카운터",
       "rest": "휴게 라운지",
       "memorial": "추모실"
-    }
+    },
+    "chatPlaceholder": "근처 사람들에게 말하기…",
+    "chatSend": "보내기"
   },
   "emergency": {
     "title": "비상! 충전이 감지되었습니다",

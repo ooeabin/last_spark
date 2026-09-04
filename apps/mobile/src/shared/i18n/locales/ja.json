@@ -20,7 +20,9 @@
       "bar": "バーカウンター",
       "rest": "休憩ラウンジ",
       "memorial": "追悼室"
-    }
+    },
+    "chatPlaceholder": "近くの人に話す…",
+    "chatSend": "送信"
   },
   "emergency": {
     "title": "緊急事態!充電が検知されました",

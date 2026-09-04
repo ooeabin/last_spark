@@ -20,7 +20,9 @@
       "bar": "Barra del Bar",
       "rest": "Sala de Descanso",
       "memorial": "Sala Conmemorativa"
-    }
+    },
+    "chatPlaceholder": "Habla con los cercanos…",
+    "chatSend": "Enviar"
   },
   "emergency": {
     "title": "¡Emergencia! Carga detectada",
