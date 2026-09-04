@@ -19,13 +19,16 @@ const ACCENT_FILLED: Variant[] = ["primary", "primaryLarge"];
  * `primaryLarge`는 화면의 주 CTA(예: 라운지 입장) 전용이다 — DESIGN.md의
  * Dark Large Pill(좌우 43px 패딩)처럼 큼직하게 잡아 다른 버튼과 위계를 만든다.
  */
-export function Button({ label, variant = "pill", style, ...rest }: Props) {
+export function Button({ label, variant = "pill", style, disabled, ...rest }: Props) {
   return (
     <Pressable
+      disabled={disabled}
+      accessibilityState={{ disabled: !!disabled }}
       style={({ pressed }) => [
         styles.base,
         variantStyles[variant],
         pressed && styles.pressed,
+        disabled && styles.disabled,
         typeof style === "function" ? undefined : style,
       ]}
       {...rest}
@@ -52,6 +55,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   pressed: { opacity: 0.8 },
+  // 비활성 버튼이 활성과 똑같아 보이면 "왜 안 눌리지"가 된다 — 흐리게 구분한다.
+  disabled: { opacity: 0.35 },
   label: { ...typography.buttonUppercase, color: colors.textPrimary },
   labelLarge: { fontSize: 16 },
 });

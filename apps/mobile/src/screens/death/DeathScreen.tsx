@@ -34,7 +34,7 @@ export function DeathScreen() {
 
         <ShopList />
 
-        <Button label="대기 화면으로" variant="pill" onPress={() => resetAfterDeath(100)} />
+        <Button label={t("death.backCta")} variant="pill" onPress={() => resetAfterDeath(100)} />
       </ScrollView>
     </ScreenContainer>
   );

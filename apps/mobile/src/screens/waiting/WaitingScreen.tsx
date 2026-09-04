@@ -7,6 +7,7 @@ import { detectCountryCode } from "@/entities/room";
 import { CharacterSprite, usePlayerIdentity } from "@/entities/player";
 import { NicknameField } from "@/features/nickname-edit";
 import { PulsingStatus } from "./ui/PulsingStatus";
+import { WaitingStage } from "./ui/WaitingStage";
 import { LeaderboardBanner } from "@/widgets/leaderboard-banner";
 import { GravestoneGallery } from "@/widgets/gravestone-gallery";
 import { AppText, Button, ScreenContainer } from "@/shared/ui";
@@ -44,28 +45,38 @@ export function WaitingScreen() {
 
         <LeaderboardBanner />
 
-        <View style={styles.center}>
-          <CharacterSprite charId={charId} />
-          <NicknameField />
+        {/* 잿불 홀 배경 위에 내 캐릭터 — 입장하면 들어갈 공간을 미리 보여준다 */}
+        <WaitingStage>
+          <View style={styles.stageHero}>
+            <CharacterSprite charId={charId} />
+          </View>
+          <View style={styles.stagePanel}>
+            <NicknameField />
 
-          <PulsingStatus
-            label={canEnter ? t("waiting.readyTitle") : t("waiting.waitingTitle")}
-            color={canEnter ? colors.accent : colors.textSecondary}
-            animated={!canEnter}
-          />
+            <PulsingStatus
+              label={canEnter ? t("waiting.readyTitle") : t("waiting.waitingTitle")}
+              color={canEnter ? colors.accent : colors.textSecondaryBright}
+              animated={!canEnter}
+            />
 
-          {!canEnter && (
-            <AppText variant="caption" color={colors.textSecondary}>
-              {isCharging
-                ? t("waiting.chargingHint")
-                : t("waiting.enterIn", { percent: batteryLevel - 10 })}
-            </AppText>
-          )}
-        </View>
+            {!canEnter && (
+              <AppText variant="caption" color={colors.textSecondaryBright}>
+                {isCharging
+                  ? t("waiting.chargingHint")
+                  : t("waiting.enterIn", { percent: batteryLevel - 10 })}
+              </AppText>
+            )}
+          </View>
+        </WaitingStage>
 
-        {canEnter && (
-          <Button label={t("waiting.enterCta")} variant="primaryLarge" onPress={enterLounge} />
-        )}
+        {/* 입장 조건을 못 채웠어도 버튼 자리는 유지한다 — 조건 충족 순간
+            버튼이 갑자기 나타나며 레이아웃이 점프하지 않게. */}
+        <Button
+          label={t("waiting.enterCta")}
+          variant="primaryLarge"
+          onPress={enterLounge}
+          disabled={!canEnter}
+        />
 
         {/* 유언 영역 — 배경 단계를 한 칸 올려 입장 영역과 다른 면으로 읽히게 한다
             (DESIGN.md 6절 "depth through shade variation", 테두리 대신 음영). */}
@@ -81,7 +92,8 @@ const styles = StyleSheet.create({
   root: { flex: 1, gap: spacing.md },
   // zIndex를 올려둬야 펼친 DEV 패널이 아래 콘텐츠에 가리지 않는다.
   headerRow: { flexDirection: "row", justifyContent: "flex-end", zIndex: 20 },
-  center: { flex: 1, alignItems: "center", justifyContent: "center", gap: spacing.md },
+  stageHero: { flex: 1, alignItems: "center", justifyContent: "center" },
+  stagePanel: { alignItems: "center", gap: spacing.sm, paddingBottom: spacing.xl },
   lastWordsSection: {
     // 화면의 3분의 1까지만 쓰고 그 안에서 스크롤한다 — 캐릭터 영역을 밀지 않도록.
     maxHeight: "33%",

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { MAX_NICKNAME_LENGTH } from "@last-spark/shared";
 import { usePlayerIdentity } from "@/entities/player";
 import { Input } from "@/shared/ui";
@@ -11,6 +12,7 @@ import { spacing } from "@/shared/theme/tokens";
  * 고칠 수 있고, "수정" 버튼 같은 별도 UI를 화면에 더하지 않아도 된다.
  */
 export function NicknameField() {
+  const { t } = useTranslation();
   const nickname = usePlayerIdentity((s) => s.nickname);
   const setNickname = usePlayerIdentity((s) => s.setNickname);
 
@@ -21,7 +23,7 @@ export function NicknameField() {
       maxLength={MAX_NICKNAME_LENGTH}
       textAlign="center"
       selectTextOnFocus
-      accessibilityLabel="닉네임"
+      accessibilityLabel={t("waiting.nicknameLabel")}
       style={{ minWidth: 160, paddingVertical: spacing.sm }}
     />
   );

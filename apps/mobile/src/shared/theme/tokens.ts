@@ -43,6 +43,9 @@ export const colors = {
 
   /** 비상 카운트다운(C) 전용 배경 — 기획서 2.1.1 고정 팔레트의 "핏빛 레드" */
   emergencyBackground: "#2a0d10",
+
+  /** 이미지 위 텍스트 가독성용 반투명 스크림 (라운지 닉네임 라벨 등) */
+  overlay: "rgba(0, 0, 0, 0.45)",
 } as const;
 
 /** DESIGN.md 6절 Depth & Elevation 그대로 (React Native shadow 근사치) */
