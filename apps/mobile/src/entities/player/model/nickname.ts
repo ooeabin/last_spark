@@ -1,28 +1,16 @@
 /**
  * 익명 닉네임 (기획서 2.1 — 기본 부여 후 유저가 직접 수정 가능).
  *
- * 짧은 이름 하나를 무작위로 준다. 국가별 라운지로 나뉘어도 표기는 전 지역
- * 공통이라 언어별 목록을 따로 두지 않는다.
+ * 제품 바코드처럼 보이는 영숫자 코드를 무작위로 준다. 국가별 라운지로
+ * 나뉘어도 표기는 전 지역 공통이라 언어별 목록을 따로 두지 않는다.
  */
-const NAMES = [
-  "미아",
-  "레오",
-  "노아",
-  "루나",
-  "마일로",
-  "노라",
-  "엘리",
-  "아이리스",
-  "휴고",
-  "클레오",
-  "오토",
-  "베라",
-  "테오",
-  "이든",
-  "리아",
-  "펠릭스",
-] as const;
+const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+const CODE_LENGTH = 6;
 
 export function generateNickname(): string {
-  return NAMES[Math.floor(Math.random() * NAMES.length)];
+  let code = "";
+  for (let i = 0; i < CODE_LENGTH; i += 1) {
+    code += ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
+  }
+  return code;
 }

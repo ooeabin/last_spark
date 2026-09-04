@@ -69,6 +69,11 @@ export interface PresenceUpdatePayload {
   occupants: number;
 }
 
+/** S → C : 플레이어가 룸을 떠남 (연결 종료 등) — 자유 이동 화면에서 아바타 제거용 */
+export interface PlayerLeftPayload {
+  playerId: string;
+}
+
 /**
  * 클라이언트 → 서버 이벤트 맵.
  * socket.emit()의 이름/페이로드 타입을 여기서 강제한다.
@@ -86,7 +91,8 @@ export interface ClientToServerEvents {
  */
 export interface ServerToClientEvents {
   "lounge:joined": (payload: LoungeJoinedPayload) => void;
-  "player:sync_move": (payload: PlayerSyncMovePayload & { playerId: string }) => void;
+  "player:sync_move": (payload: PlayerSyncMovePayload & { playerId: string; nickname: string }) => void;
+  "player:left": (payload: PlayerLeftPayload) => void;
   "emergency:start": (payload: EmergencyStartPayload) => void;
   "emergency:cancel": (payload: EmergencyCancelPayload) => void;
   "traitor:execute": (payload: TraitorExecutePayload) => void;

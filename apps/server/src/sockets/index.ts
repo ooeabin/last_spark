@@ -36,6 +36,7 @@ export function registerSocketHandlers(io: IOServer) {
 
       if (session?.roomId) {
         roomManager.leaveRoom(socket.id);
+        io.to(session.roomId).emit("player:left", { playerId: socket.id });
         io.to(session.roomId).emit("presence:update", {
           roomId: session.roomId,
           occupants: roomManager.getRoom(session.roomId)?.occupants ?? 0,

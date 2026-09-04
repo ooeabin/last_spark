@@ -61,6 +61,7 @@ export function registerLoungeHandlers(io: IOServer, socket: IOSocket) {
     socket.to(session.roomId).emit("player:sync_move", {
       ...payload,
       playerId: socket.id,
+      nickname: session.nickname,
     });
   });
 }
