@@ -1,9 +1,14 @@
 """Last Spark 자리표시자 에셋 생성 — 기획서 2.1.1 큐트-흑화 카툰 스타일.
 
-배경(잿불 바 룸, 720x1280, 4레이어) + 캐릭터(SD 고양이, 60x90 x 8프레임 idle/walk).
-고정 팔레트 6색에서 파생. 실행: Pillow가 설치된 파이썬으로 `python3 generate-placeholders.py`
-(스크립트 위치 기준 background/, characters/cat/에 PNG를 덮어쓰고, 시스템 임시 폴더에
-preview.png / strips.png 미리보기를 남긴다).
+배경(잿불 바)은 화면보다 넓은 월드(논리 1440x2160)이고, 문으로 이어진 4개 구역
+(잿불 홀·바 카운터·휴게 라운지·추모실)으로 나뉜다. 카메라가 내 캐릭터를 따라
+스크롤한다(어몽어스식). 벽/문 좌표는 코드(free-roam/model/constants.ts의 WALLS)와
+반드시 일치해야 한다 — 여기 LAYOUT 상수가 그 원본 수치다.
+비네팅만 카메라를 따라다니는 화면 고정 오버레이라 별도 파일로 분리되어 있다.
+캐릭터는 SD 고양이 60x90(논리) 8프레임. 고정 팔레트 6색에서 파생.
+실행: Pillow가 설치된 파이썬으로 `python3 generate-placeholders.py`
+(스크립트 위치 기준 background/, characters/cat/에 PNG를 덮어쓰고,
+시스템 임시 폴더에 preview.png / worldmap.png / strips.png 미리보기를 남긴다).
 """
 import math
 import os
@@ -24,222 +29,433 @@ def mix(a, b, t):
 def a_(rgb, alpha):
     return rgb + (alpha,)
 
-W, H = 720, 1280
-FLOOR_Y = 470  # 벽/바닥 경계
+# 월드(논리 pt) 크기 — free-roam/constants.ts WORLD_WIDTH/HEIGHT와 같아야 한다
+LOGICAL_W, LOGICAL_H = 1440, 2160
+K = 2                      # 확대 시 안 깨지게 2배 해상도로 내보낸다
+W, H = LOGICAL_W * K, LOGICAL_H * K
+
+# ── 방 레이아웃 (논리 pt) — free-roam/constants.ts의 WALLS/FLOOR_TOP과 일치 ──
+FLOOR_Y = 340              # 상단 벽 하단 = 바닥 시작
+HWALL_TOP, HWALL_BOT = 1080, 1170          # 가로 인테리어 벽 띠
+HDOOR_L = (260, 440)                        # 가로벽 왼쪽 문 (x 구간)
+HDOOR_R = (1000, 1180)                      # 가로벽 오른쪽 문
+VWALL_X = (706, 734)                        # 세로 인테리어 벽 (x 구간)
+VDOOR_TOP = (600, 780)                      # 위쪽 세로벽 문 (y 구간)
+VDOOR_BOT = (1520, 1700)                    # 아래쪽 세로벽 문
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_BG = f"{_HERE}/background"
 OUT_CH = f"{_HERE}/characters/cat"
 
+wall_col = mix(MID, (0, 0, 0), 0.72)
+wall_stripe = mix(MID, (0, 0, 0), 0.66)
+baseboard = mix(INK, (0, 0, 0), 0.25)
+
 # ════════════════════════════════════════════════════════════
-# 레이어 1: room-base — 벽 + 나무 바닥
+# 레이어 1: room-base — 벽 + 방별 바닥 (월드 전체, 불투명)
 # ════════════════════════════════════════════════════════════
-def room_base():
-    img = Image.new("RGB", (W, H))
-    d = ImageDraw.Draw(img)
-
-    wall = mix(MID, (0, 0, 0), 0.72)          # 어두운 잿빛 벽
-    wall_stripe = mix(MID, (0, 0, 0), 0.66)
-    d.rectangle([0, 0, W, FLOOR_Y], fill=wall)
-    for x in range(0, W, 72):                  # 은은한 세로 벽지 줄무늬
-        d.rectangle([x, 0, x + 30, FLOOR_Y], fill=wall_stripe)
-
-    # 걸레받이
-    d.rectangle([0, FLOOR_Y - 26, W, FLOOR_Y], fill=mix(INK, (0, 0, 0), 0.25))
-    d.line([0, FLOOR_Y - 26, W, FLOOR_Y - 26], fill=mix(INK, (0, 0, 0), 0.5), width=4)
-
-    # 나무 바닥 — 가로 판자
+def planks(d, x0, y0, x1, y1, tint, tint_t):
+    """(x0..x1, y0..y1) 논리 영역에 나무 판자 바닥."""
     plank_light = mix(MID, CREAM, 0.08)
     plank_dark = mix(MID, (0, 0, 0), 0.12)
     row_h = 108
-    y = FLOOR_Y
-    row = 0
-    while y < H:
+    row = y0 // row_h
+    y = (y0 // row_h) * row_h
+    while y < y1:
         base = mix(plank_light, plank_dark, (row % 3) * 0.14)
-        # 아래로 갈수록(가까울수록) 약간 밝고 따뜻하게
-        t = (y - FLOOR_Y) / (H - FLOOR_Y)
-        base = mix(base, AMBER, 0.06 + 0.05 * t)
-        d.rectangle([0, y, W, y + row_h], fill=base)
-        d.line([0, y, W, y], fill=mix(base, INK, 0.45), width=4)
-        # 판자 세로 이음새 (행마다 어긋나게, 드문드문)
+        base = mix(base, tint, tint_t)
+        ry0, ry1 = max(y, y0), min(y + row_h, y1)
+        d.rectangle([x0 * K, ry0 * K, x1 * K, ry1 * K], fill=base)
+        if y >= y0:
+            d.line([x0 * K, y * K, x1 * K, y * K], fill=mix(base, INK, 0.45), width=4 * K)
         off = (row * 233) % 360
-        for x in range(-360 + off, W + 360, 360):
-            d.line([x, y, x, y + row_h], fill=mix(base, INK, 0.3), width=3)
+        for x in range(-360 + off, LOGICAL_W + 360, 360):
+            if x0 <= x <= x1:
+                d.line([x * K, ry0 * K, x * K, ry1 * K], fill=mix(base, INK, 0.3), width=3 * K)
         y += row_h
         row += 1
+
+def front_wall(d, x0, x1, y0, y1, doors=()):
+    """정면(가로) 벽 띠 — 줄무늬 + 걸레받이. doors: 뚫을 x 구간 목록."""
+    segs = []
+    cur = x0
+    for dx0, dx1 in sorted(doors):
+        if dx0 > cur:
+            segs.append((cur, dx0))
+        cur = dx1
+    if cur < x1:
+        segs.append((cur, x1))
+    for sx0, sx1 in segs:
+        d.rectangle([sx0 * K, y0 * K, sx1 * K, y1 * K], fill=wall_col)
+        for x in range(0, LOGICAL_W, 72):
+            if sx0 <= x and x + 30 <= sx1:
+                d.rectangle([x * K, y0 * K, (x + 30) * K, y1 * K], fill=wall_stripe)
+        d.rectangle([sx0 * K, (y1 - 22) * K, sx1 * K, y1 * K], fill=baseboard)
+        d.line([sx0 * K, (y1 - 22) * K, sx1 * K, (y1 - 22) * K], fill=mix(INK, (0, 0, 0), 0.5), width=4 * K)
+        # 문설주 잉크 테두리
+        for ex in (sx0, sx1):
+            if ex not in (x0, x1):
+                d.line([ex * K, y0 * K, ex * K, y1 * K], fill=mix(INK, (0, 0, 0), 0.45), width=4 * K)
+    # 벽 아래 바닥 그림자
+    for sx0, sx1 in segs:
+        d.rectangle([sx0 * K, y1 * K, sx1 * K, (y1 + 12) * K], fill=a_((0, 0, 0), 60))
+
+def side_wall(d, y0, y1, doors=()):
+    """세로 인테리어 벽 — 어두운 기둥 띠. doors: 뚫을 y 구간 목록."""
+    segs = []
+    cur = y0
+    for dy0, dy1 in sorted(doors):
+        if dy0 > cur:
+            segs.append((cur, dy0))
+        cur = dy1
+    if cur < y1:
+        segs.append((cur, y1))
+    for sy0, sy1 in segs:
+        d.rectangle([VWALL_X[0] * K, sy0 * K, VWALL_X[1] * K, sy1 * K], fill=wall_col)
+        d.rectangle([VWALL_X[0] * K, sy0 * K, VWALL_X[1] * K, sy1 * K],
+                    outline=mix(INK, (0, 0, 0), 0.45), width=3 * K)
+        # 기둥 끝 캡
+        for ey in (sy0, sy1):
+            if ey not in (y0, y1):
+                d.rectangle([(VWALL_X[0] - 6) * K, (ey - 7) * K, (VWALL_X[1] + 6) * K, (ey + 7) * K],
+                            fill=baseboard, outline=mix(INK, (0, 0, 0), 0.5), width=3 * K)
+
+def room_base():
+    img = Image.new("RGB", (W, H), wall_col)
+    d = ImageDraw.Draw(img)
+
+    # 방별 바닥 (잿불 홀 / 바 카운터 / 휴게 라운지 / 추모실)
+    planks(d, 0, FLOOR_Y, VWALL_X[1], HWALL_BOT, AMBER, 0.08)                 # A 홀 — 따뜻한 갈색
+    planks(d, VWALL_X[0], FLOOR_Y, LOGICAL_W, HWALL_BOT, BLOOD, 0.16)        # B 바 — 붉은 나무
+    planks(d, 0, HWALL_TOP, VWALL_X[1], LOGICAL_H, CREAM, 0.10)              # C 휴게 — 밝고 포근
+    planks(d, VWALL_X[0], HWALL_TOP, LOGICAL_W, LOGICAL_H, (52, 58, 56), 0.28)  # D 추모 — 차가운 잿빛
+
+    # 상단 외벽 + 인테리어 벽 (문 뚫기)
+    front_wall(d, 0, LOGICAL_W, 0, FLOOR_Y)
+    front_wall(d, 0, LOGICAL_W, HWALL_TOP, HWALL_BOT, doors=(HDOOR_L, HDOOR_R))
+    side_wall(d, FLOOR_Y, HWALL_TOP, doors=(VDOOR_TOP,))
+    side_wall(d, HWALL_BOT, LOGICAL_H, doors=(VDOOR_BOT,))
 
     return img
 
 # ════════════════════════════════════════════════════════════
-# 공통 그리기 도우미
+# 공통 도우미
 # ════════════════════════════════════════════════════════════
 def frame_rect(d, box, fill, outline=INK, ow=6, r=14):
     d.rounded_rectangle(box, radius=r, fill=fill, outline=outline, width=ow)
 
+def sconce(d, cx, cy):
+    cx, cy = cx * K, cy * K
+    d.line([cx, cy + 22 * K, cx, cy + 52 * K], fill=a_(INK, 255), width=8 * K)
+    d.rounded_rectangle([cx - 26 * K, cy + 48 * K, cx + 26 * K, cy + 62 * K], radius=7 * K,
+                        fill=a_(mix(MID, (0, 0, 0), 0.3), 255), outline=a_(INK, 255), width=5 * K)
+    d.rounded_rectangle([cx - 10 * K, cy - 6 * K, cx + 10 * K, cy + 26 * K], radius=8 * K,
+                        fill=a_(mix(CREAM, MID, 0.35), 255), outline=a_(INK, 255), width=5 * K)
+    d.polygon([(cx, cy - 34 * K), (cx + 9 * K, cy - 16 * K), (cx, cy - 6 * K), (cx - 9 * K, cy - 16 * K)],
+              fill=a_(AMBER, 255))
+    d.polygon([(cx, cy - 26 * K), (cx + 4 * K, cy - 15 * K), (cx, cy - 9 * K), (cx - 4 * K, cy - 15 * K)],
+              fill=a_(mix(CREAM, AMBER, 0.35), 255))
+
+def mini_candle(d, cx, cy, flame=AMBER):
+    cx, cy = cx * K, cy * K
+    d.rounded_rectangle([cx - 7 * K, cy - 20 * K, cx + 7 * K, cy], radius=5 * K,
+                        fill=a_(mix(CREAM, MID, 0.35), 255), outline=a_(INK, 255), width=3 * K)
+    d.polygon([(cx, cy - 40 * K), (cx + 6 * K, cy - 27 * K), (cx, cy - 20 * K), (cx - 6 * K, cy - 27 * K)],
+              fill=a_(flame, 255))
+
+# 상단 외벽 촛대·전구줄·액자 위치 (A/B 공용)
+SCONCES_TOP = ((70, 210), (560, 200))
+SCONCES_HWALL = ((150, 1092), (560, 1092), (880, 1092), (1330, 1092))
+
 # ════════════════════════════════════════════════════════════
-# 레이어 2: wall-decor — 삐뚤어진 액자, 촛대, 낡은 전구줄
+# 레이어 2: wall-decor — 전구줄, 액자, 촛대, 술병 선반
 # ════════════════════════════════════════════════════════════
 def wall_decor():
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
 
-    # 늘어진 전구줄 (희미하게 몇 개만 살아있음)
-    pts = [(int(x), int(70 + 46 * math.sin((x / W) * math.pi))) for x in range(0, W + 1, 8)]
-    d.line(pts, fill=a_(mix(INK, (0, 0, 0), 0.2), 255), width=5)
+    # 늘어진 전구줄 (상단 외벽, 두 굽이 — 몇 개만 살아있음)
+    pts = [(int(x), int((60 + 42 * abs(math.sin((x / W) * math.pi * 2))) * K))
+           for x in range(0, W + 1, 8 * K)]
+    d.line(pts, fill=a_(mix(INK, (0, 0, 0), 0.2), 255), width=5 * K)
     for i, (x, y) in enumerate(pts[::10]):
         alive = i % 3 == 1
         col = AMBER if alive else mix(MID, (0, 0, 0), 0.4)
-        d.line([x, y, x, y + 16], fill=a_(mix(INK, (0, 0, 0), 0.2), 255), width=4)
-        d.ellipse([x - 9, y + 14, x + 9, y + 32], fill=a_(col, 255), outline=a_(INK, 255), width=4)
+        d.line([x, y, x, y + 16 * K], fill=a_(mix(INK, (0, 0, 0), 0.2), 255), width=4 * K)
+        d.ellipse([x - 9 * K, y + 14 * K, x + 9 * K, y + 32 * K],
+                  fill=a_(col, 255), outline=a_(INK, 255), width=4 * K)
 
     def crooked_frame(cx, cy, w, h, tilt, face):
-        """삐뚤어진 액자. face: 함수(draw, box)"""
-        fr = Image.new("RGBA", (w + 40, h + 40), (0, 0, 0, 0))
+        cx, cy, w, h = cx * K, cy * K, w * K, h * K
+        fr = Image.new("RGBA", (w + 40 * K, h + 40 * K), (0, 0, 0, 0))
         fd = ImageDraw.Draw(fr)
-        frame_rect(fd, [8, 8, w + 32, h + 32], mix(MID, (0, 0, 0), 0.35), ow=7, r=10)
-        fd.rectangle([24, 24, w + 16, h + 16], fill=mix(BLOOD, (0, 0, 0), 0.35))
-        face(fd, (24, 24, w + 16, h + 16))
+        frame_rect(fd, [8 * K, 8 * K, w + 32 * K, h + 32 * K],
+                   mix(MID, (0, 0, 0), 0.35), ow=7 * K, r=10 * K)
+        fd.rectangle([24 * K, 24 * K, w + 16 * K, h + 16 * K], fill=mix(BLOOD, (0, 0, 0), 0.35))
+        face(fd, (24 * K, 24 * K, w + 16 * K, h + 16 * K))
         fr = fr.rotate(tilt, expand=True, resample=Image.BICUBIC)
         img.alpha_composite(fr, (cx - fr.width // 2, cy - fr.height // 2))
 
-    # 액자 1: 묘비 낙서
     def face_grave(fd, b):
         x0, y0, x1, y1 = b
         cx = (x0 + x1) // 2
-        fd.rounded_rectangle([cx - 22, y0 + 22, cx + 22, y1 - 8], radius=18,
-                             fill=mix(MID, CREAM, 0.25), outline=INK, width=4)
-        fd.line([cx - 10, y0 + 44, cx + 10, y0 + 44], fill=INK, width=4)
-        fd.line([cx - 10, y0 + 56, cx + 10, y0 + 56], fill=INK, width=4)
-    crooked_frame(150, 240, 110, 130, -7, face_grave)
+        fd.rounded_rectangle([cx - 22 * K, y0 + 22 * K, cx + 22 * K, y1 - 8 * K], radius=18 * K,
+                             fill=mix(MID, CREAM, 0.25), outline=INK, width=4 * K)
+        fd.line([cx - 10 * K, y0 + 44 * K, cx + 10 * K, y0 + 44 * K], fill=INK, width=4 * K)
+        fd.line([cx - 10 * K, y0 + 56 * K, cx + 10 * K, y0 + 56 * K], fill=INK, width=4 * K)
 
-    # 액자 2: 초승달 그림
     def face_moon(fd, b):
         x0, y0, x1, y1 = b
         cx, cy = (x0 + x1) // 2, (y0 + y1) // 2
-        fd.ellipse([cx - 26, cy - 26, cx + 26, cy + 26], fill=mix(CREAM, AMBER, 0.3))
-        fd.ellipse([cx - 34, cy - 30, cx + 14, cy + 18], fill=mix(BLOOD, (0, 0, 0), 0.35))
-    crooked_frame(570, 220, 120, 100, 5, face_moon)
+        fd.ellipse([cx - 26 * K, cy - 26 * K, cx + 26 * K, cy + 26 * K], fill=mix(CREAM, AMBER, 0.3))
+        fd.ellipse([cx - 34 * K, cy - 30 * K, cx + 14 * K, cy + 18 * K], fill=mix(BLOOD, (0, 0, 0), 0.35))
 
-    # 벽 촛대 x2
-    def sconce(cx, cy):
-        d.line([cx, cy + 22, cx, cy + 52], fill=a_(INK, 255), width=8)
-        d.rounded_rectangle([cx - 26, cy + 48, cx + 26, cy + 62], radius=7,
-                            fill=a_(mix(MID, (0, 0, 0), 0.3), 255), outline=a_(INK, 255), width=5)
-        d.rounded_rectangle([cx - 10, cy - 6, cx + 10, cy + 26], radius=8,
-                            fill=a_(mix(CREAM, MID, 0.35), 255), outline=a_(INK, 255), width=5)
-        # 촛불 (앰버)
-        d.polygon([(cx, cy - 34), (cx + 9, cy - 16), (cx, cy - 6), (cx - 9, cy - 16)],
-                  fill=a_(AMBER, 255))
-        d.polygon([(cx, cy - 26), (cx + 4, cy - 15), (cx, cy - 9), (cx - 4, cy - 15)],
-                  fill=a_(mix(CREAM, AMBER, 0.35), 255))
-    sconce(350, 260)
-    sconce(60, 330)
-    sconce(660, 330)
+    # A 홀 벽: 액자 2 + 촛대
+    crooked_frame(220, 190, 110, 130, -7, face_grave)
+    crooked_frame(430, 170, 120, 100, 5, face_moon)
+    for sx, sy in SCONCES_TOP:
+        sconce(d, sx, sy)
+
+    # B 바 벽: 술병 선반 2단
+    def shelf(x0, x1, cy, seed):
+        d.rounded_rectangle([x0 * K, cy * K, x1 * K, (cy + 16) * K], radius=6 * K,
+                            fill=a_(mix(MID, (0, 0, 0), 0.35), 255), outline=a_(INK, 255), width=4 * K)
+        cols = [mix(AMBER, BLOOD, 0.4), mix(MINT, MID, 0.45), mix(BLOOD, CREAM, 0.25),
+                mix(MID, CREAM, 0.3), mix(AMBER, CREAM, 0.3)]
+        x = x0 + 26
+        i = seed
+        while x < x1 - 30:
+            bh = 46 + (i * 13) % 26
+            bw = 12 + (i * 7) % 8
+            col = cols[i % len(cols)]
+            d.rounded_rectangle([(x - bw) * K, (cy - bh) * K, (x + bw) * K, cy * K], radius=6 * K,
+                                fill=a_(col, 255), outline=a_(INK, 255), width=3 * K)
+            d.rectangle([(x - 4) * K, (cy - bh - 14) * K, (x + 4) * K, (cy - bh) * K],
+                        fill=a_(col, 255), outline=a_(INK, 255), width=3 * K)
+            x += 24 + bw + (i * 5) % 14
+            i += 1
+    shelf(800, 1360, 170, 1)
+    shelf(830, 1330, 280, 4)
+
+    # 인테리어 가로벽: 작은 촛불들
+    for sx, sy in SCONCES_HWALL:
+        mini_candle(d, sx, sy + 42)
 
     return img
 
 # ════════════════════════════════════════════════════════════
-# 레이어 3: floor-props — 잿불 화로(제단), 러그, 방석, 화분, 인형
+# 레이어 3: floor-props — 광원 글로우 + 방별 소품
 # ════════════════════════════════════════════════════════════
 def floor_props():
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+
+    # ── 광원 글로우 (소품 아래 깔림) ──
+    glow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    gd = ImageDraw.Draw(glow)
+    def glow_at(cx, cy, r_base, strength=1.0, col=AMBER):
+        cx, cy = cx * K, cy * K
+        for r, al in ((r_base, 24), (int(r_base * 0.7), 32), (int(r_base * 0.42), 42)):
+            r *= K
+            gd.ellipse([cx - r, cy - int(r * 0.72), cx + r, cy + int(r * 0.72)],
+                       fill=a_(col, int(al * strength)))
+    glow_at(360, 700, 300)                    # A 화로
+    glow_at(1080, 560, 260, 0.9)              # B 바 카운터
+    glow_at(360, 1560, 170, 0.8)              # C 탁자 촛불
+    glow_at(150, 1900, 130, 0.7)              # C 탁자 촛불
+    glow_at(1000, 1500, 130, 0.7, MINT)       # D 묘비 도깨비불
+    glow_at(1240, 1750, 130, 0.7, MINT)
+    glow_at(900, 1950, 120, 0.6)              # D 촛불
+    for sx, sy in SCONCES_TOP:
+        glow_at(sx, sy - 20, 110, 0.6)
+    for sx, sy in SCONCES_HWALL:
+        glow_at(sx, sy + 20, 100, 0.5)
+    glow = glow.filter(ImageFilter.GaussianBlur(60 * K))
+    img.alpha_composite(glow)
+
     d = ImageDraw.Draw(img)
 
-    # 중앙 러그 (핏빛에서 파생한 낡은 자주색, 테두리 잉크)
-    rug = mix(BLOOD, MID, 0.35)
-    d.ellipse([120, 640, 600, 950], fill=a_(rug, 255), outline=a_(INK, 255), width=7)
-    d.ellipse([170, 675, 550, 915], outline=a_(mix(rug, CREAM, 0.25), 255), width=5)
+    def rug(cx, cy, rw, rh, col=None):
+        cx, cy, rw, rh = cx * K, cy * K, rw * K, rh * K
+        col = col or mix(BLOOD, MID, 0.35)
+        d.ellipse([cx - rw, cy - rh, cx + rw, cy + rh], fill=a_(col, 255), outline=a_(INK, 255), width=7 * K)
+        d.ellipse([cx - int(rw * 0.78), cy - int(rh * 0.74), cx + int(rw * 0.78), cy + int(rh * 0.74)],
+                  outline=a_(mix(col, CREAM, 0.25), 255), width=5 * K)
 
-    # 잿불 화로 = 방전 제단 (벽 앞 중앙)
-    hx, hy = 360, 520
-    d.rounded_rectangle([hx - 110, hy - 30, hx + 110, hy + 46], radius=20,
-                        fill=a_(mix(MID, (0, 0, 0), 0.42), 255), outline=a_(INK, 255), width=7)
-    d.ellipse([hx - 86, hy - 44, hx + 86, hy + 10], fill=a_(mix(INK, (0, 0, 0), 0.3), 255),
-              outline=a_(INK, 255), width=6)
-    # 잿불 덩어리들
-    for i, (ex, ey, r) in enumerate([(-46, -16, 16), (-8, -24, 20), (34, -14, 15), (12, -8, 11)]):
-        col = mix(AMBER, BLOOD, 0.25 + 0.15 * (i % 2))
-        d.ellipse([hx + ex - r, hy + ey - r, hx + ex + r, hy + ey + r], fill=a_(col, 255))
-    d.ellipse([hx - 14, hy - 30, hx + 10, hy - 8], fill=a_(mix(CREAM, AMBER, 0.4), 255))
-    # 화로 다리
-    for lx in (-80, 70):
-        d.rounded_rectangle([hx + lx, hy + 40, hx + lx + 22, hy + 74], radius=8,
-                            fill=a_(mix(INK, (0, 0, 0), 0.2), 255))
-
-    # 방석 3개
     def cushion(cx, cy, col):
-        d.ellipse([cx - 52, cy - 26, cx + 52, cy + 26], fill=a_(col, 255), outline=a_(INK, 255), width=6)
-        d.ellipse([cx - 34, cy - 15, cx + 34, cy + 15], outline=a_(mix(col, (0, 0, 0), 0.25), 255), width=4)
-    cushion(180, 1030, mix(MID, BLOOD, 0.3))
-    cushion(540, 1010, mix(MID, (0, 0, 0), 0.15))
-    cushion(370, 1130, mix(MID, AMBER, 0.2))
+        cx, cy = cx * K, cy * K
+        d.ellipse([cx - 52 * K, cy - 26 * K, cx + 52 * K, cy + 26 * K],
+                  fill=a_(col, 255), outline=a_(INK, 255), width=6 * K)
+        d.ellipse([cx - 34 * K, cy - 15 * K, cx + 34 * K, cy + 15 * K],
+                  outline=a_(mix(col, (0, 0, 0), 0.25), 255), width=4 * K)
 
-    # 시든 화분
-    px, py = 640, 760
-    d.rounded_rectangle([px - 34, py, px + 34, py + 58], radius=10,
-                        fill=a_(mix(BLOOD, MID, 0.5), 255), outline=a_(INK, 255), width=6)
-    stem = mix(MID, (20, 60, 40), 0.45)
-    d.line([px, py, px - 4, py - 60], fill=a_(stem, 255), width=7)
-    for ang, ln in ((-2.4, 34), (-0.9, 40), (0.4, 30)):
-        ex = px - 4 + int(math.cos(ang) * ln)
-        ey = py - 60 + int(math.sin(ang) * ln) + 16
-        d.line([px - 4, py - 60, ex, ey], fill=a_(stem, 255), width=5)
-        d.ellipse([ex - 9, ey - 6, ex + 9, ey + 10], fill=a_(mix(stem, CREAM, 0.2), 255),
-                  outline=a_(INK, 255), width=3)
+    def table(cx, cy):
+        tx, ty = cx * K, cy * K
+        d.rounded_rectangle([tx - 110 * K, ty - 40 * K, tx + 110 * K, ty + 16 * K], radius=14 * K,
+                            fill=a_(mix(MID, (0, 0, 0), 0.3), 255), outline=a_(INK, 255), width=6 * K)
+        for lx in (-88, 68):
+            d.rounded_rectangle([tx + lx * K, ty + 12 * K, tx + (lx + 20) * K, ty + 46 * K], radius=7 * K,
+                                fill=a_(mix(INK, (0, 0, 0), 0.2), 255))
+        mini_candle(d, cx, cy - 42)
 
-    # 낡은 곰인형 (한쪽 귀 처짐, 단추 눈)
-    bx, by = 96, 850
-    bear = mix(MID, AMBER, 0.3)
-    d.ellipse([bx - 34, by, bx + 34, by + 64], fill=a_(bear, 255), outline=a_(INK, 255), width=6)  # 몸
-    d.ellipse([bx - 26, by - 42, bx + 26, by + 8], fill=a_(bear, 255), outline=a_(INK, 255), width=6)  # 머리
-    d.ellipse([bx - 30, by - 52, bx - 10, by - 32], fill=a_(bear, 255), outline=a_(INK, 255), width=5)  # 귀
-    d.ellipse([bx + 8, by - 44, bx + 28, by - 26], fill=a_(bear, 255), outline=a_(INK, 255), width=5)   # 처진 귀
-    d.line([bx - 8, by - 22, bx - 2, by - 16], fill=a_(INK, 255), width=4)  # X 눈
-    d.line([bx - 2, by - 22, bx - 8, by - 16], fill=a_(INK, 255), width=4)
-    d.ellipse([bx + 6, by - 21, bx + 14, by - 13], fill=a_(INK, 255))       # 단추 눈
-    d.line([bx - 6, by + 26, bx + 10, by + 30], fill=a_(INK, 255), width=4)  # 꿰맨 자국
-    for sx in range(-4, 10, 5):
-        d.line([bx + sx, by + 24, bx + sx + 2, by + 33], fill=a_(INK, 255), width=3)
+    def plant(px, py):
+        px, py = px * K, py * K
+        d.rounded_rectangle([px - 34 * K, py, px + 34 * K, py + 58 * K], radius=10 * K,
+                            fill=a_(mix(BLOOD, MID, 0.5), 255), outline=a_(INK, 255), width=6 * K)
+        stem = mix(MID, (20, 60, 40), 0.45)
+        d.line([px, py, px - 4 * K, py - 60 * K], fill=a_(stem, 255), width=7 * K)
+        for ang, ln in ((-2.4, 34), (-0.9, 40), (0.4, 30)):
+            ex = px - 4 * K + int(math.cos(ang) * ln * K)
+            ey = py - 60 * K + int(math.sin(ang) * ln * K) + 16 * K
+            d.line([px - 4 * K, py - 60 * K, ex, ey], fill=a_(stem, 255), width=5 * K)
+            d.ellipse([ex - 9 * K, ey - 6 * K, ex + 9 * K, ey + 10 * K],
+                      fill=a_(mix(stem, CREAM, 0.2), 255), outline=a_(INK, 255), width=3 * K)
+
+    # ── A. 잿불 홀 — 방전 제단(화로) + 러그 ──
+    hx, hy = 360 * K, 700 * K
+    d.rounded_rectangle([hx - 130 * K, hy - 34 * K, hx + 130 * K, hy + 52 * K], radius=22 * K,
+                        fill=a_(mix(MID, (0, 0, 0), 0.42), 255), outline=a_(INK, 255), width=7 * K)
+    d.ellipse([hx - 102 * K, hy - 50 * K, hx + 102 * K, hy + 12 * K],
+              fill=a_(mix(INK, (0, 0, 0), 0.3), 255), outline=a_(INK, 255), width=6 * K)
+    for i, (ex, ey, r) in enumerate([(-56, -18, 18), (-10, -28, 23), (40, -16, 17), (14, -9, 12)]):
+        col = mix(AMBER, BLOOD, 0.25 + 0.15 * (i % 2))
+        d.ellipse([hx + (ex - r) * K, hy + (ey - r) * K, hx + (ex + r) * K, hy + (ey + r) * K],
+                  fill=a_(col, 255))
+    d.ellipse([hx - 16 * K, hy - 34 * K, hx + 12 * K, hy - 9 * K], fill=a_(mix(CREAM, AMBER, 0.4), 255))
+    for lx in (-96, 82):
+        d.rounded_rectangle([hx + lx * K, hy + 46 * K, hx + (lx + 24) * K, hy + 84 * K], radius=8 * K,
+                            fill=a_(mix(INK, (0, 0, 0), 0.2), 255))
+    mini_candle(d, 250, 780)
+    mini_candle(d, 470, 780)
+    rug(360, 900, 220, 130)
+    cushion(150, 950, mix(MID, BLOOD, 0.3))
+    cushion(560, 1000, mix(MID, AMBER, 0.2))
+    plant(90, 480)
+    plant(640, 470)
+
+    # ── B. 바 카운터 — 카운터 + 스툴 + 잔 ──
+    bx0, bx1, by = 820, 1360, 480
+    d.rounded_rectangle([bx0 * K, (by - 60) * K, bx1 * K, (by + 30) * K], radius=16 * K,
+                        fill=a_(mix(MID, BLOOD, 0.35), 255), outline=a_(INK, 255), width=7 * K)
+    d.rounded_rectangle([bx0 * K, (by - 60) * K, bx1 * K, (by - 28) * K], radius=16 * K,
+                        fill=a_(mix(MID, CREAM, 0.18), 255), outline=a_(INK, 255), width=5 * K)
+    for i in range(4):  # 잔·병
+        gx = bx0 + 90 + i * 120
+        if i % 2 == 0:
+            d.rounded_rectangle([(gx - 12) * K, (by - 76) * K, (gx + 12) * K, (by - 52) * K], radius=4 * K,
+                                fill=a_(mix(AMBER, CREAM, 0.4), 220), outline=a_(INK, 255), width=3 * K)
+        else:
+            mini_candle(d, gx, by - 52, flame=AMBER)
+    for i in range(4):  # 스툴
+        sx = bx0 + 70 + i * 130
+        d.ellipse([(sx - 30) * K, (by + 90) * K, (sx + 30) * K, (by + 134) * K],
+                  fill=a_(mix(MID, (0, 0, 0), 0.25), 255), outline=a_(INK, 255), width=5 * K)
+        d.ellipse([(sx - 20) * K, (by + 97) * K, (sx + 20) * K, (by + 124) * K],
+                  outline=a_(mix(MID, CREAM, 0.2), 255), width=3 * K)
+    rug(1080, 830, 200, 120, mix(BLOOD, MID, 0.28))
+    cushion(880, 960, mix(MID, BLOOD, 0.3))
+    cushion(1290, 990, mix(MID, (0, 0, 0), 0.15))
+    plant(1370, 700)
+
+    # ── C. 휴게 라운지 — 큰 러그 + 방석 + 탁자 + 곰인형 + 책더미 ──
+    rug(360, 1600, 250, 155, mix(MID, AMBER, 0.18))
+    for cx, cy, col in ((240, 1540, mix(MID, BLOOD, 0.3)), (480, 1560, mix(MID, (0, 0, 0), 0.15)),
+                        (330, 1700, mix(MID, AMBER, 0.2)), (560, 1810, mix(MID, BLOOD, 0.3)),
+                        (140, 1720, mix(MID, (0, 0, 0), 0.15))):
+        cushion(cx, cy, col)
+    table(360, 1450)
+    table(150, 1970)
+
+    def bear(bx, by):
+        bx, by = bx * K, by * K
+        col = mix(MID, AMBER, 0.3)
+        d.ellipse([bx - 34 * K, by, bx + 34 * K, by + 64 * K], fill=a_(col, 255), outline=a_(INK, 255), width=6 * K)
+        d.ellipse([bx - 26 * K, by - 42 * K, bx + 26 * K, by + 8 * K], fill=a_(col, 255), outline=a_(INK, 255), width=6 * K)
+        d.ellipse([bx - 30 * K, by - 52 * K, bx - 10 * K, by - 32 * K], fill=a_(col, 255), outline=a_(INK, 255), width=5 * K)
+        d.ellipse([bx + 8 * K, by - 44 * K, bx + 28 * K, by - 26 * K], fill=a_(col, 255), outline=a_(INK, 255), width=5 * K)
+        d.line([bx - 8 * K, by - 22 * K, bx - 2 * K, by - 16 * K], fill=a_(INK, 255), width=4 * K)
+        d.line([bx - 2 * K, by - 22 * K, bx - 8 * K, by - 16 * K], fill=a_(INK, 255), width=4 * K)
+        d.ellipse([bx + 6 * K, by - 21 * K, bx + 14 * K, by - 13 * K], fill=a_(INK, 255))
+        d.line([bx - 6 * K, by + 26 * K, bx + 10 * K, by + 30 * K], fill=a_(INK, 255), width=4 * K)
+        for sx in range(-4, 10, 5):
+            d.line([bx + sx * K, by + 24 * K, bx + (sx + 2) * K, by + 33 * K], fill=a_(INK, 255), width=3 * K)
+    bear(620, 1290)
+
+    def books(bx, by):
+        cols = (mix(BLOOD, MID, 0.4), mix(MID, MINT, 0.2), mix(MID, AMBER, 0.3))
+        for i, col in enumerate(cols):
+            w_, h_ = 64 - i * 8, 16
+            d.rounded_rectangle([(bx - w_ // 2) * K, (by - h_ * (i + 1)) * K,
+                                 (bx + w_ // 2) * K, (by - h_ * i) * K], radius=4 * K,
+                                fill=a_(col, 255), outline=a_(INK, 255), width=3 * K)
+    books(90, 1350)
+    plant(650, 2050)
+
+    # ── D. 추모실 — 묘비 + 도깨비불 + 시든 꽃 ──
+    def gravestone(gx, gy, wisp=False):
+        gxk, gyk = gx * K, gy * K
+        stone = mix(MID, CREAM, 0.2)
+        d.rounded_rectangle([gxk - 40 * K, gyk - 80 * K, gxk + 40 * K, gyk], radius=32 * K,
+                            fill=a_(stone, 255), outline=a_(INK, 255), width=6 * K)
+        d.rectangle([gxk - 46 * K, gyk - 10 * K, gxk + 46 * K, gyk], fill=a_(mix(stone, (0, 0, 0), 0.25), 255),
+                    outline=a_(INK, 255), width=4 * K)
+        d.line([gxk - 18 * K, gyk - 52 * K, gxk + 18 * K, gyk - 52 * K], fill=a_(INK, 255), width=4 * K)
+        d.line([gxk - 18 * K, gyk - 38 * K, gxk + 18 * K, gyk - 38 * K], fill=a_(INK, 255), width=4 * K)
+        if wisp:
+            d.ellipse([gxk - 10 * K, gyk - 118 * K, gxk + 10 * K, gyk - 92 * K], fill=a_(MINT, 200))
+            d.polygon([(gxk, gyk - 132 * K), (gxk + 8 * K, gyk - 108 * K), (gxk - 8 * K, gyk - 108 * K)],
+                      fill=a_(MINT, 200))
+    gravestone(1000, 1500, wisp=True)
+    gravestone(1240, 1750, wisp=True)
+    gravestone(870, 1700)
+    gravestone(1130, 1980)
+    mini_candle(d, 940, 1540)
+    mini_candle(d, 1300, 1790)
+    mini_candle(d, 900, 1990)
+
+    def wilted_flower(fx, fy):
+        fx, fy = fx * K, fy * K
+        stem = mix(MID, (20, 60, 40), 0.4)
+        d.line([fx, fy, fx + 6 * K, fy - 34 * K], fill=a_(stem, 255), width=4 * K)
+        d.line([fx + 6 * K, fy - 34 * K, fx + 18 * K, fy - 26 * K], fill=a_(stem, 255), width=4 * K)
+        d.ellipse([fx + 12 * K, fy - 32 * K, fx + 26 * K, fy - 18 * K],
+                  fill=a_(mix(BLOOD, CREAM, 0.3), 255), outline=a_(INK, 255), width=3 * K)
+    wilted_flower(1050, 1520)
+    wilted_flower(1190, 1990)
+    rug(1080, 1300, 170, 95, mix((52, 58, 56), BLOOD, 0.3))
+
+    # ── 떠다니는 불씨·도깨비불 조각 (월드 곳곳) ──
+    spark = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    sd = ImageDraw.Draw(spark)
+    seeds = [(170, 820), (420, 610), (660, 710), (930, 580), (1200, 800), (310, 1240),
+             (1040, 1170), (1300, 1380), (520, 1000), (830, 920), (1380, 500), (100, 480),
+             (240, 1900), (760, 1780), (1180, 2020), (960, 1550), (560, 2050), (60, 1200)]
+    for i, (x, y) in enumerate(seeds):
+        x, y = x * K, y * K
+        r = (4 + (i % 3) * 2) * K
+        col = MINT if i % 4 == 0 or x > 720 * K and y > 1170 * K else AMBER
+        sd.ellipse([x - r, y - r, x + r, y + r], fill=a_(col, 130))
+        sd.ellipse([x - r * 2, y - r * 2, x + r * 2, y + r * 2], fill=a_(col, 40))
+    spark = spark.filter(ImageFilter.GaussianBlur(2 * K))
+    img.alpha_composite(spark)
 
     return img
 
 # ════════════════════════════════════════════════════════════
-# 레이어 4: vignette — 비네팅 + 잿불 광원 + 떠다니는 불씨
+# vignette — 화면 고정 오버레이 (가장자리 어둡게). 카메라와 무관하게
+# 스크린 전체에 덮이므로 월드가 아니라 화면 비율(720x1280 논리)로 만든다.
 # ════════════════════════════════════════════════════════════
+VIG_W, VIG_H = 720 * K, 1280 * K
+
 def vignette():
-    img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-
-    # 잿불 화로 주변 앰버 글로우
-    glow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    gd = ImageDraw.Draw(glow)
-    for r, al in ((300, 26), (210, 34), (130, 44)):
-        gd.ellipse([360 - r, 500 - int(r * 0.72), 360 + r, 500 + int(r * 0.72)], fill=a_(AMBER, al))
-    glow = glow.filter(ImageFilter.GaussianBlur(60))
-    img.alpha_composite(glow)
-
-    # 가장자리 비네팅
-    vig = Image.new("L", (W, H), 0)
+    img = Image.new("RGBA", (VIG_W, VIG_H), (0, 0, 0, 0))
+    vig = Image.new("L", (VIG_W, VIG_H), 0)
     vd = ImageDraw.Draw(vig)
-    vd.rectangle([0, 0, W, H], fill=150)
-    vd.ellipse([-W * 0.35, -H * 0.25, W * 1.35, H * 1.25], fill=0)
-    vig = vig.filter(ImageFilter.GaussianBlur(120))
-    black = Image.new("RGBA", (W, H), a_(mix(BLOOD, (0, 0, 0), 0.6), 255))
+    vd.rectangle([0, 0, VIG_W, VIG_H], fill=150)
+    vd.ellipse([-VIG_W * 0.35, -VIG_H * 0.25, VIG_W * 1.35, VIG_H * 1.25], fill=0)
+    vig = vig.filter(ImageFilter.GaussianBlur(120 * K))
+    black = Image.new("RGBA", (VIG_W, VIG_H), a_(mix(BLOOD, (0, 0, 0), 0.6), 255))
     black.putalpha(vig)
     img.alpha_composite(black)
-
-    # 떠다니는 불씨(앰버)와 도깨비불 조각(민트)
-    spark = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    sd = ImageDraw.Draw(spark)
-    seeds = [(87, 411), (211, 305), (333, 356), (466, 288), (598, 402), (155, 620),
-             (520, 585), (652, 690), (260, 500), (415, 460), (692, 250), (48, 240)]
-    for i, (x, y) in enumerate(seeds):
-        r = 4 + (i % 3) * 2
-        col = MINT if i % 4 == 0 else AMBER
-        sd.ellipse([x - r, y - r, x + r, y + r], fill=a_(col, 130))
-        sd.ellipse([x - r * 2, y - r * 2, x + r * 2, y + r * 2], fill=a_(col, 40))
-    spark = spark.filter(ImageFilter.GaussianBlur(2))
-    img.alpha_composite(spark)
-
     return img
 
 # ════════════════════════════════════════════════════════════
@@ -377,30 +593,40 @@ vignette().save(f"{OUT_BG}/vignette.png")
 sprite_strip(False).save(f"{OUT_CH}/idle.png")
 sprite_strip(True).save(f"{OUT_CH}/walk.png")
 
-# ── 미리보기 합성 (씬 + 캐릭터 3마리) ──────────────────────
-prev = room_base().convert("RGBA")
-prev.alpha_composite(wall_decor())
-prev.alpha_composite(floor_props())
+# ── 미리보기: 월드 전체 축소판 + 화면(720x1280) 뷰포트 크롭 ──
+world = room_base().convert("RGBA")
+world.alpha_composite(wall_decor())
+world.alpha_composite(floor_props())
 idle = sprite_strip(False)
 walk = sprite_strip(True)
 
-def put_char(strip, frame, x, y, scale=2.4):
+AVATAR_SCALE = 1.2  # 코드의 LoungeScene AVATAR_SCALE과 같은 값 (월드 대비 캐릭터 비율 확인용)
+
+def put_char(strip, frame, x, y):
+    """(x, y)는 논리 월드 좌표의 발밑 앵커."""
     ew, eh = FW * EXPORT_SCALE, FH * EXPORT_SCALE
     fr = strip.crop((frame * ew, 0, (frame + 1) * ew, eh))
-    fr = fr.resize((int(FW * scale), int(FH * scale)), Image.LANCZOS)
-    prev.alpha_composite(fr, (x, y))
+    w, h = int(FW * AVATAR_SCALE * K), int(FH * AVATAR_SCALE * K)
+    fr = fr.resize((w, h), Image.LANCZOS)
+    world.alpha_composite(fr, (x * K - w // 2, y * K - h))
 
-put_char(idle, 0, 300, 640)
-put_char(walk, 2, 120, 830)
-put_char(idle, 3, 480, 900)
-prev.alpha_composite(vignette())
+put_char(idle, 0, 360, 900)     # A 홀
+put_char(walk, 2, 690, 700)     # A→B 문 근처
+put_char(idle, 3, 1080, 900)    # B 바
+put_char(walk, 5, 350, 1610)    # C 휴게
+put_char(idle, 6, 1000, 1620)   # D 추모실
 
-PREV = os.path.join(tempfile.gettempdir(), "preview.png")
-prev.save(PREV)
+cam_x = min(max(360 * K - VIG_W // 2, 0), W - VIG_W)
+cam_y = min(max(900 * K - VIG_H // 2, 0), H - VIG_H)
+viewport = world.crop((cam_x, cam_y, cam_x + VIG_W, cam_y + VIG_H))
+viewport.alpha_composite(vignette())
 
-# 캐릭터 스트립 확대 미리보기
+tmp = tempfile.gettempdir()
+viewport.resize((720, 1280), Image.LANCZOS).save(os.path.join(tmp, "preview.png"))
+world.resize((LOGICAL_W // 2, LOGICAL_H // 2), Image.LANCZOS).save(os.path.join(tmp, "worldmap.png"))
+
 big = Image.new("RGBA", (FW * NFRAME * 2, FH * 4 + 20), (24, 18, 14, 255))
-big.alpha_composite(idle.resize((FW * NFRAME * 2, FH * 2), Image.NEAREST), (0, 0))
-big.alpha_composite(walk.resize((FW * NFRAME * 2, FH * 2), Image.NEAREST), (0, FH * 2 + 20))
-big.save(PREV.replace("preview.png", "strips.png"))
+big.alpha_composite(idle.resize((FW * NFRAME * 2, FH * 2), Image.LANCZOS), (0, 0))
+big.alpha_composite(walk.resize((FW * NFRAME * 2, FH * 2), Image.LANCZOS), (0, FH * 2 + 20))
+big.save(os.path.join(tmp, "strips.png"))
 print("done")

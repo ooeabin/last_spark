@@ -1,33 +1,31 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { View, StyleSheet, type LayoutChangeEvent } from "react-native";
 import { Canvas, Image as SkiaImage, useImage, FilterMode, MipmapMode } from "@shopify/react-native-skia";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { runOnJS } from "react-native-reanimated";
 import { CAT_FRAME_W, CAT_FRAME_H } from "@/entities/player";
-import { useLocalMovement, useRemotePlayers } from "@/features/free-roam";
+import { useLocalMovement, useRemotePlayers, WORLD_WIDTH, WORLD_HEIGHT, getRoomAt } from "@/features/free-roam";
 import { radius } from "@/shared/theme/tokens";
 import { PlayerAvatar } from "./PlayerAvatar";
+import { Joystick } from "./Joystick";
+import { RoomTransition } from "./RoomTransition";
 
 /**
  * 라운지 씬 (기획서 2.1.1 — 손그림 룸 배경 + SD 동물 캐릭터, 전 영역 자유 이동).
  *
- * 배경은 겹쳐 깔린 4장의 룸 레이어(베이스→벽 장식→바닥 소품→비네팅)를 Skia로 합성한다.
- * 화면을 탭하면 그 지점을 목표로 내 캐릭터가 걸어가고(useLocalMovement),
+ * 어몽어스식 구성: 맵(월드)은 화면보다 넓은 고정 크기(WORLD_WIDTH/HEIGHT)이고,
+ * 카메라가 내 캐릭터를 따라가며 월드의 일부만 보여준다. 배경 3장(베이스→벽
+ * 장식→바닥 소품)은 월드 좌표에 깔리고, 비네팅만 카메라와 무관하게 화면에
+ * 고정으로 덮인다. 이동은 왼쪽 아래 가상 조이스틱으로 조작한다(useLocalMovement).
  * 같은 룸의 다른 플레이어는 player:sync_move로 받은 좌표를 보간해서 함께
- * 그린다(useRemotePlayers). 좌표는 필드 폭/높이로 정규화해 소켓에 실어
- * 보내므로 기기마다 화면 크기가 달라도 상대 위치가 어긋나지 않는다.
- *
- * 탭 인식은 RN 코어의 responder 방식 대신 react-native-gesture-handler를
- * 쓴다 — ScreenContainer가 키보드 dismiss용으로 화면 전체를
- * TouchableWithoutFeedback으로 감싸고 있어서, 코어 responder 협상에 맡기면
- * 그 바깥쪽 핸들러와 얽혀 탭이 씬까지 도달하지 못하는 경우가 있다.
- * GestureDetector는 별도의 네이티브 제스처 인식기라 이 문제에서 자유롭다.
+ * 그린다(useRemotePlayers). 좌표는 월드 크기로 정규화해 소켓에 실어 보내므로
+ * 기기마다 화면 크기가 달라도 상대 위치가 어긋나지 않는다.
  */
 
 // 부드러운 손그림 카툰 배경이라 선형 샘플링으로 확대한다 (픽셀 아트 아님)
 const SMOOTH_SAMPLING = { filter: FilterMode.Linear, mipmap: MipmapMode.None };
-const AVATAR_SCALE = 2.4;
+const AVATAR_SCALE = 1.2;
 const CHAR_SIZE = { width: CAT_FRAME_W * AVATAR_SCALE, height: CAT_FRAME_H * AVATAR_SCALE };
+
+const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), Math.max(min, max));
 
 interface Props {
   /** 이번 세션 캐릭터 id */
@@ -41,9 +39,9 @@ export function LoungeScene({ charId: _charId, nickname }: Props) {
   const wallDecor = useImage(require("../../../../assets/background/wall-decor.png"));
   const floorProps = useImage(require("../../../../assets/background/floor-props.png"));
   const vignette = useImage(require("../../../../assets/background/vignette.png"));
-  const images = [base, wallDecor, floorProps, vignette];
+  const worldLayers = [base, wallDecor, floorProps];
 
-  const local = useLocalMovement(size, CHAR_SIZE);
+  const local = useLocalMovement(CHAR_SIZE);
   const remotePlayers = useRemotePlayers();
 
   const onLayout = (e: LayoutChangeEvent) => {
@@ -51,65 +49,74 @@ export function LoungeScene({ charId: _charId, nickname }: Props) {
     setSize({ width, height });
   };
 
-  const { moveTo } = local;
-  // local(useLocalMovement의 반환값)은 매 틱(60ms)마다 갱신되어 이 컴포넌트도 같이
-  // 리렌더된다 — Gesture 객체를 매번 새로 만들면 GestureDetector가 계속 재부착되며
-  // 탭 인식이 불안정해지므로, 참조가 바뀌지 않는 moveTo에만 의존해 메모이즈한다.
-  const tapGesture = useMemo(
-    () =>
-      Gesture.Tap().onEnd((e) => {
-        runOnJS(moveTo)(e.x, e.y);
-      }),
-    [moveTo],
-  );
+  // 카메라: 내 캐릭터를 화면 중앙에 두되, 월드 가장자리에서는 더 못 나가게 클램프
+  const camX = clamp(local.x - size.width / 2, 0, WORLD_WIDTH - size.width);
+  const camY = clamp(local.y - size.height / 2, 0, WORLD_HEIGHT - size.height);
 
-  const bgReady = size.width > 0 && images.every((img) => img !== null);
+  const bgReady = size.width > 0 && worldLayers.every((img) => img !== null) && vignette !== null;
 
   return (
-    <GestureDetector gesture={tapGesture}>
-      <View style={styles.container} onLayout={onLayout}>
-        {bgReady && (
-          <Canvas style={StyleSheet.absoluteFill}>
-            {images.map((img, i) => (
-              <SkiaImage
-                key={i}
-                image={img}
-                x={0}
-                y={0}
-                width={size.width}
-                height={size.height}
-                fit="cover"
-                sampling={SMOOTH_SAMPLING}
-              />
-            ))}
-          </Canvas>
-        )}
+    <View style={styles.container} onLayout={onLayout}>
+      {bgReady && (
+        <Canvas style={StyleSheet.absoluteFill}>
+          {worldLayers.map((img, i) => (
+            <SkiaImage
+              key={i}
+              image={img}
+              x={-camX}
+              y={-camY}
+              width={WORLD_WIDTH}
+              height={WORLD_HEIGHT}
+              fit="fill"
+              sampling={SMOOTH_SAMPLING}
+            />
+          ))}
+        </Canvas>
+      )}
 
-        {remotePlayers.map((p) => (
-          <PlayerAvatar
-            key={p.playerId}
-            x={p.x * size.width}
-            y={p.y * size.height}
-            animation={p.animation}
-            frame={p.frame}
-            faceRight={p.faceRight}
-            nickname={p.nickname}
-            scale={AVATAR_SCALE}
-          />
-        ))}
-
+      {remotePlayers.map((p) => (
         <PlayerAvatar
-          x={local.x}
-          y={local.y}
-          animation={local.animation}
-          frame={local.frame}
-          faceRight={local.faceRight}
-          nickname={nickname}
-          isSelf
+          key={p.playerId}
+          x={p.x * WORLD_WIDTH - camX}
+          y={p.y * WORLD_HEIGHT - camY}
+          animation={p.animation}
+          frame={p.frame}
+          faceRight={p.faceRight}
+          nickname={p.nickname}
           scale={AVATAR_SCALE}
         />
-      </View>
-    </GestureDetector>
+      ))}
+
+      <PlayerAvatar
+        x={local.x - camX}
+        y={local.y - camY}
+        animation={local.animation}
+        frame={local.frame}
+        faceRight={local.faceRight}
+        nickname={nickname}
+        isSelf
+        scale={AVATAR_SCALE}
+      />
+
+      {/* 화면 고정 비네팅 — 캐릭터 위에 덮여 어스름한 조명 톤을 만든다 */}
+      {bgReady && (
+        <Canvas style={StyleSheet.absoluteFill} pointerEvents="none">
+          <SkiaImage
+            image={vignette}
+            x={0}
+            y={0}
+            width={size.width}
+            height={size.height}
+            fit="fill"
+            sampling={SMOOTH_SAMPLING}
+          />
+        </Canvas>
+      )}
+
+      <RoomTransition roomKey={getRoomAt(local.x, local.y)} />
+
+      <Joystick onMove={local.setVelocity} />
+    </View>
   );
 }
 

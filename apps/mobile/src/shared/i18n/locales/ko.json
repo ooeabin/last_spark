@@ -8,12 +8,19 @@
     "chargingHint": "충전 중에는 입장할 수 없어요",
     "gravestoneGalleryTitle": "유언",
     "hallOfFameTitle": "명예의 전당",
-    "gravestoneEmpty": "아직 남겨진 유언이 없어요"
+    "gravestoneEmpty": "아직 남겨진 유언이 없어요",
+    "nicknameLabel": "닉네임"
   },
   "lounge": {
     "cheersToast": "건배!",
-    "scenePending": "라운지 화면 준비 중",
-    "connecting": "Connecting..."
+    "connecting": "라운지 연결 중…",
+    "joystick": "이동 조이스틱",
+    "rooms": {
+      "hall": "잿불 홀",
+      "bar": "바 카운터",
+      "rest": "휴게 라운지",
+      "memorial": "추모실"
+    }
   },
   "emergency": {
     "title": "비상! 충전이 감지되었습니다",
@@ -26,12 +33,15 @@
   },
   "death": {
     "title": "방전되었습니다",
-    "shareCta": "결과 카드 공유하기"
+    "shareCta": "결과 카드 공유하기",
+    "backCta": "대기 화면으로"
   },
   "shop": {
     "oxygenMask": "산소호흡기 (광고 시청)",
     "traitorPass": "배신자 프리패스",
     "customGrave": "커스텀 묘비 & 사망 이펙트",
-    "hallOfFameBanner": "명예의 전당 전광판"
+    "hallOfFameBanner": "명예의 전당 전광판",
+    "freeWithAd": "무료 (광고 시청)",
+    "buyPending": "구매 (준비중)"
   }
 }

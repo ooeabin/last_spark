@@ -35,14 +35,14 @@ export function PlayerAvatar({ x, y, animation, frame, faceRight, nickname, isSe
     >
       <View
         style={{
-          backgroundColor: "rgba(0,0,0,0.45)",
+          backgroundColor: colors.overlay,
           borderRadius: 999,
           paddingHorizontal: 8,
           paddingVertical: 2,
           marginBottom: 2,
         }}
       >
-        <AppText variant="caption" color={isSelf ? colors.accent : colors.textSecondaryBright}>
+        <AppText variant="small" color={isSelf ? colors.accent : colors.textSecondaryBright}>
           {nickname}
         </AppText>
       </View>

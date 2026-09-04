@@ -8,12 +8,19 @@
     "chargingHint": "No puedes entrar mientras se carga",
     "gravestoneGalleryTitle": "Últimas Palabras",
     "hallOfFameTitle": "Salón de la Fama",
-    "gravestoneEmpty": "Aún no hay últimas palabras"
+    "gravestoneEmpty": "Aún no hay últimas palabras",
+    "nicknameLabel": "Apodo"
   },
   "lounge": {
     "cheersToast": "¡Salud!",
-    "scenePending": "Escena del salón en preparación",
-    "connecting": "Connecting..."
+    "connecting": "Conectando al salón…",
+    "joystick": "Palanca de movimiento",
+    "rooms": {
+      "hall": "Salón de Brasas",
+      "bar": "Barra del Bar",
+      "rest": "Sala de Descanso",
+      "memorial": "Sala Conmemorativa"
+    }
   },
   "emergency": {
     "title": "¡Emergencia! Carga detectada",
@@ -26,12 +33,15 @@
   },
   "death": {
     "title": "Tu teléfono se apagó",
-    "shareCta": "Compartir tarjeta de resultado"
+    "shareCta": "Compartir tarjeta de resultado",
+    "backCta": "Volver a la espera"
   },
   "shop": {
     "oxygenMask": "Máscara de Oxígeno (ver anuncio)",
     "traitorPass": "Pase de Traidor",
     "customGrave": "Lápida Personalizada y Efecto de Muerte",
-    "hallOfFameBanner": "Cartel del Salón de la Fama"
+    "hallOfFameBanner": "Cartel del Salón de la Fama",
+    "freeWithAd": "Gratis (ver anuncio)",
+    "buyPending": "Comprar (próximamente)"
   }
 }

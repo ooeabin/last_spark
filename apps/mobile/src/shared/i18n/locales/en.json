@@ -8,12 +8,19 @@
     "chargingHint": "You can't enter while charging",
     "gravestoneGalleryTitle": "Last Words",
     "hallOfFameTitle": "Hall of Fame",
-    "gravestoneEmpty": "No last words yet"
+    "gravestoneEmpty": "No last words yet",
+    "nicknameLabel": "Nickname"
   },
   "lounge": {
     "cheersToast": "Cheers!",
-    "scenePending": "Lounge scene coming soon",
-    "connecting": "Connecting..."
+    "connecting": "Connecting to the lounge…",
+    "joystick": "Movement joystick",
+    "rooms": {
+      "hall": "Ember Hall",
+      "bar": "Bar Counter",
+      "rest": "Rest Lounge",
+      "memorial": "Memorial Room"
+    }
   },
   "emergency": {
     "title": "Emergency! Charging detected",
@@ -26,12 +33,15 @@
   },
   "death": {
     "title": "Your phone died",
-    "shareCta": "Share your result card"
+    "shareCta": "Share your result card",
+    "backCta": "Back to waiting"
   },
   "shop": {
     "oxygenMask": "Oxygen Mask (watch ad)",
     "traitorPass": "Traitor's Pass",
     "customGrave": "Custom Gravestone & Death Effect",
-    "hallOfFameBanner": "Hall of Fame Banner"
+    "hallOfFameBanner": "Hall of Fame Banner",
+    "freeWithAd": "Free (watch an ad)",
+    "buyPending": "Buy (coming soon)"
   }
 }

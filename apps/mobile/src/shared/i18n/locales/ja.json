@@ -8,12 +8,19 @@
     "chargingHint": "充電中は入場できません",
     "gravestoneGalleryTitle": "遺言",
     "hallOfFameTitle": "殿堂",
-    "gravestoneEmpty": "まだ遺言はありません"
+    "gravestoneEmpty": "まだ遺言はありません",
+    "nicknameLabel": "ニックネーム"
   },
   "lounge": {
     "cheersToast": "乾杯!",
-    "scenePending": "ラウンジ画面 準備中",
-    "connecting": "Connecting..."
+    "connecting": "ラウンジに接続中…",
+    "joystick": "移動ジョイスティック",
+    "rooms": {
+      "hall": "燠火ホール",
+      "bar": "バーカウンター",
+      "rest": "休憩ラウンジ",
+      "memorial": "追悼室"
+    }
   },
   "emergency": {
     "title": "緊急事態!充電が検知されました",
@@ -26,12 +33,15 @@
   },
   "death": {
     "title": "電源が切れました",
-    "shareCta": "結果カードをシェア"
+    "shareCta": "結果カードをシェア",
+    "backCta": "待機画面へ"
   },
   "shop": {
     "oxygenMask": "酸素マスク (広告視聴)",
     "traitorPass": "裏切り者パス",
     "customGrave": "カスタム墓標 & 死亡エフェクト",
-    "hallOfFameBanner": "殿堂電光掲示板"
+    "hallOfFameBanner": "殿堂電光掲示板",
+    "freeWithAd": "無料(広告視聴)",
+    "buyPending": "購入(準備中)"
   }
 }

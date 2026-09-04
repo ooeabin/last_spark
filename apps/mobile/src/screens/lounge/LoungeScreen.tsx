@@ -27,7 +27,7 @@ export function LoungeScreen() {
           </AppText>
         </View>
 
-        {/* 라운지 씬: 2D 패럴랙스 배경 + 도트 캐릭터 (기획서 2.1.1) */}
+        {/* 라운지 씬 (기획서 2.1.1) — 어몽어스식 월드 + 추적 카메라 */}
         <LoungeScene charId={charId} nickname={nickname} />
 
         <DevBatteryControls />

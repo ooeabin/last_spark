@@ -67,7 +67,7 @@ V2에서 국가별 테마를 분리하고 싶다면 기획서 3.2의 3개국(KR/
 
 스타일은 **큐트-흑화 카툰**(기획서 2.1.1)이다 — 두꺼운 잉크 아웃라인의 통통한 SD 동물 캐릭터 + 손그림 실내 룸 배경(동물 카페류 게임 참고)에, 채도 낮춘 황혼 팔레트와 잿불·촛불 조명으로 "귀엽지만 스러져 가는" 톤을 얹는다. 모든 에셋 색은 기획서 2.1.1의 고정 팔레트 6색에서 파생시킨다. 픽셀(도트) 아트가 아니므로 스프라이트 확대는 Nearest가 아니라 Linear 샘플링을 쓴다.
 
-배경은 실시간 3D가 아니라 **2D 이미지(필요시 원경/중경/근경 패럴랙스 레이어) + 고정 시점**이다. react-three-fiber/expo-three 같은 3D 렌더링 스택은 이 프로젝트에 없다 — `react-native-skia` 기반 2D 합성 렌더링만 쓴다. HD-2D(실시간 3D 씬 + 자유/추적 카메라)는 엔지니어링 비용 때문에 채택하지 않기로 한 방식이므로, 3D 관련 코드나 의존성을 추가하자는 제안이 나오면 이 결정을 먼저 확인할 것.
+배경은 실시간 3D가 아니라 **2D 이미지 레이어 + 고정 시점**이고, 라운지는 화면보다 넓은 고정 크기 월드(`features/free-roam/model/constants.ts`의 `WORLD_WIDTH/HEIGHT`) 위를 어몽어스식 추적 카메라가 스크롤한다 — 위치 동기화 정규화(0~1)의 기준도 화면이 아니라 이 월드 크기다. react-three-fiber/expo-three 같은 3D 렌더링 스택은 이 프로젝트에 없다 — `react-native-skia` 기반 2D 합성 렌더링만 쓴다. HD-2D(실시간 3D 씬 + 자유/추적 카메라)는 엔지니어링 비용 때문에 채택하지 않기로 한 방식이므로, 3D 관련 코드나 의존성을 추가하자는 제안이 나오면 이 결정을 먼저 확인할 것.
 
 ## UI 컴포넌트 규칙
 
@@ -83,7 +83,7 @@ V2에서 국가별 테마를 분리하고 싶다면 기획서 3.2의 3개국(KR/
 
 **색은 반드시 `apps/mobile/src/shared/theme/tokens.ts`의 `colors` 값만 사용한다.** 컴포넌트에 HEX(`#00f0ff`)·`rgb()`·`rgba()` 리터럴을 직접 쓰지 않는다 — `AppText`의 `color` prop, 커스텀 `style`의 색상 값 전부 마찬가지다.
 
-- 사용 가능한 토큰: `background`·`surface`·`surfaceAlt`·`card`·`cardAlt`(배경/표면), `textPrimary`·`textSecondary`·`textSecondaryBright`·`textEmphasis`(텍스트), `border`·`borderLight`·`separator`(테두리), `negative`·`warning`·`announcement`(상태색), `accent`·`accentBorder`(단일 기능색 — 기획서 2.1.1 고정 팔레트의 "도깨비불 민트", 캐릭터 머리 위 불꽃과 같은 색), `emergencyBackground`(비상 카운트다운 화면 전용 짙은 레드 배경 — 고정 팔레트의 "핏빛 레드").
+- 사용 가능한 토큰: `background`·`surface`·`surfaceAlt`·`card`·`cardAlt`(배경/표면), `textPrimary`·`textSecondary`·`textSecondaryBright`·`textEmphasis`(텍스트), `border`·`borderLight`·`separator`(테두리), `negative`·`warning`·`announcement`(상태색), `accent`·`accentBorder`(단일 기능색 — 기획서 2.1.1 고정 팔레트의 "도깨비불 민트", 캐릭터 머리 위 불꽃과 같은 색), `emergencyBackground`(비상 카운트다운 화면 전용 짙은 레드 배경 — 고정 팔레트의 "핏빛 레드"), `overlay`(이미지 위 텍스트 가독성용 반투명 스크림).
 - 필요한 색이 토큰에 없으면 리터럴을 바로 쓰지 말고, 먼저 `tokens.ts`의 `colors`에 값을 추가한 뒤 그 토큰을 참조한다. 토큰 이름이 애매하면 사용자에게 먼저 확인한다. `emergencyBackground`도 이 절차대로 추가된 것 — `EmergencyScreen.tsx`에 `backgroundColor: "#2a0d10"`로 하드코딩돼 있던 걸 토큰화했다.
 - `accent`/`accentBorder` 값은 기획서 2.1.1 고정 팔레트를 따른다 — 팔레트를 바꾸고 싶으면 기획서 2.1.1부터 고치고 `tokens.ts`의 토큰 값만 바꾼다. 컴포넌트 코드에 이 값을 다시 하드코딩하지 않는다.
 - 참고: 화면 컴포넌트 6개(`DeathScreen`·`AltarScreen`·`LoungeScreen`·`WaitingScreen`·`GravestoneGallery` 등)에 `color="#b3b3b3"`/`"#7c7c7c"`처럼 HEX가 직접 박혀 있던 걸 각각 `colors.textSecondary`/`colors.borderLight`로 고친 적이 있다 — 디자인 목업에서 눈대중으로 HEX를 그대로 옮기는 패턴을 반복하지 말 것.
