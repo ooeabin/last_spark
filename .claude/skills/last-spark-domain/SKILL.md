@@ -57,15 +57,17 @@ description: 마지막 불꽃(Last Spark) 앱의 도메인 규칙 — 상태머�
 **룸 매칭은 국가별로 분리하되, 비주얼 테마는 전 국가 통일이다.** 이 두 개를 섞지 말 것:
 
 - 매칭(어느 유저가 같은 룸에 들어가는가) = 국가 코드 기준 분리 (`roomManager.assignRoom(countryCode)`)
-- 테마(룸이 어떻게 생겼는가) = 전 국가 공통 "사이버펑크 폐허 바" 1종
+- 테마(룸이 어떻게 생겼는가) = 전 국가 공통 "잿불 바"(어스름한 오두막 라운지) 1종
 
 매칭은 항상 국가별로 유지한다 — 타임존으로 룸을 나누지 않는다는 것이지, 매칭을 전역 단일 풀로 합친다는 뜻이 아니다. 정원 30명 초과 시 같은 국가 안에서 `KR-2`, `KR-3`처럼 분점을 만든다(`roomManager.ts`). 사용자 수가 적은 국가는 `GL` 버킷.
 
 V2에서 국가별 테마를 분리하고 싶다면 기획서 3.2의 3개국(KR/US/JP) 테마 초안을 참고한다.
 
-## 아트 디렉션 — 3D 아님
+## 아트 디렉션 — 3D 아님, 픽셀 아트도 아님
 
-배경은 실시간 3D가 아니라 **2D 이미지(필요시 원경/중경/근경 패럴랙스 레이어) + 고정 시점**이다(데이브 더 다이브 스타일, 기획서 2.1.1). react-three-fiber/expo-three 같은 3D 렌더링 스택은 이 프로젝트에 없다 — `react-native-skia` 기반 2D 합성 렌더링만 쓴다. HD-2D(실시간 3D 씬 + 자유/추적 카메라)는 엔지니어링 비용 때문에 채택하지 않기로 한 방식이므로, 3D 관련 코드나 의존성을 추가하자는 제안이 나오면 이 결정을 먼저 확인할 것.
+스타일은 **큐트-흑화 카툰**(기획서 2.1.1)이다 — 두꺼운 잉크 아웃라인의 통통한 SD 동물 캐릭터 + 손그림 실내 룸 배경(동물 카페류 게임 참고)에, 채도 낮춘 황혼 팔레트와 잿불·촛불 조명으로 "귀엽지만 스러져 가는" 톤을 얹는다. 모든 에셋 색은 기획서 2.1.1의 고정 팔레트 6색에서 파생시킨다. 픽셀(도트) 아트가 아니므로 스프라이트 확대는 Nearest가 아니라 Linear 샘플링을 쓴다.
+
+배경은 실시간 3D가 아니라 **2D 이미지(필요시 원경/중경/근경 패럴랙스 레이어) + 고정 시점**이다. react-three-fiber/expo-three 같은 3D 렌더링 스택은 이 프로젝트에 없다 — `react-native-skia` 기반 2D 합성 렌더링만 쓴다. HD-2D(실시간 3D 씬 + 자유/추적 카메라)는 엔지니어링 비용 때문에 채택하지 않기로 한 방식이므로, 3D 관련 코드나 의존성을 추가하자는 제안이 나오면 이 결정을 먼저 확인할 것.
 
 ## UI 컴포넌트 규칙
 
@@ -81,9 +83,9 @@ V2에서 국가별 테마를 분리하고 싶다면 기획서 3.2의 3개국(KR/
 
 **색은 반드시 `apps/mobile/src/shared/theme/tokens.ts`의 `colors` 값만 사용한다.** 컴포넌트에 HEX(`#00f0ff`)·`rgb()`·`rgba()` 리터럴을 직접 쓰지 않는다 — `AppText`의 `color` prop, 커스텀 `style`의 색상 값 전부 마찬가지다.
 
-- 사용 가능한 토큰: `background`·`surface`·`surfaceAlt`·`card`·`cardAlt`(배경/표면), `textPrimary`·`textSecondary`·`textSecondaryBright`·`textEmphasis`(텍스트), `border`·`borderLight`·`separator`(테두리), `negative`·`warning`·`announcement`(상태색), `accent`·`accentBorder`(단일 기능색 — 배터리 방전 임박, 라운지 사이버펑크 테마의 시안색 포인트), `emergencyBackground`(비상 카운트다운 화면 전용 짙은 레드 배경).
+- 사용 가능한 토큰: `background`·`surface`·`surfaceAlt`·`card`·`cardAlt`(배경/표면), `textPrimary`·`textSecondary`·`textSecondaryBright`·`textEmphasis`(텍스트), `border`·`borderLight`·`separator`(테두리), `negative`·`warning`·`announcement`(상태색), `accent`·`accentBorder`(단일 기능색 — 기획서 2.1.1 고정 팔레트의 "도깨비불 민트", 캐릭터 머리 위 불꽃과 같은 색), `emergencyBackground`(비상 카운트다운 화면 전용 짙은 레드 배경 — 고정 팔레트의 "핏빛 레드").
 - 필요한 색이 토큰에 없으면 리터럴을 바로 쓰지 말고, 먼저 `tokens.ts`의 `colors`에 값을 추가한 뒤 그 토큰을 참조한다. 토큰 이름이 애매하면 사용자에게 먼저 확인한다. `emergencyBackground`도 이 절차대로 추가된 것 — `EmergencyScreen.tsx`에 `backgroundColor: "#2a0d10"`로 하드코딩돼 있던 걸 토큰화했다.
-- `accent`는 현재 placeholder(기획서 9.4 "아트 디렉션 고정" 단계에서 실제 팔레트 확정 전)다 — 실제 팔레트가 나오면 `tokens.ts`의 `accent`/`accentBorder`만 바꾸면 되므로, 컴포넌트 코드에 이 값을 다시 하드코딩하지 않는다.
+- `accent`/`accentBorder` 값은 기획서 2.1.1 고정 팔레트를 따른다 — 팔레트를 바꾸고 싶으면 기획서 2.1.1부터 고치고 `tokens.ts`의 토큰 값만 바꾼다. 컴포넌트 코드에 이 값을 다시 하드코딩하지 않는다.
 - 참고: 화면 컴포넌트 6개(`DeathScreen`·`AltarScreen`·`LoungeScreen`·`WaitingScreen`·`GravestoneGallery` 등)에 `color="#b3b3b3"`/`"#7c7c7c"`처럼 HEX가 직접 박혀 있던 걸 각각 `colors.textSecondary`/`colors.borderLight`로 고친 적이 있다 — 디자인 목업에서 눈대중으로 HEX를 그대로 옮기는 패턴을 반복하지 말 것.
 
 ## 상태 관리 규칙
@@ -110,7 +112,7 @@ V2에서 국가별 테마를 분리하고 싶다면 기획서 3.2의 3개국(KR/
 
 ## 에셋 파이프라인 (기획서 9.4)
 
-전속 디자이너 없이 진행한다. 배경은 Higgsfield `generate_image`(패럴랙스면 레이어별로 나눠 생성), 캐릭터 도트 스프라이트+애니메이션은 PixelLab. 실제 에셋이 생기기 전까지 `apps/mobile/src/screens/lounge/LoungeScreen.tsx`의 캔버스 자리는 placeholder Card로 남아있다 — 에셋 연동 시 이 부분을 `react-native-skia` Canvas로 교체.
+전속 디자이너 없이 진행한다. 배경·캐릭터 모두 Higgsfield `generate_image`로 뽑는다(배경은 패럴랙스면 레이어별로 나눠 생성, 캐릭터는 프레임 시트 생성 + remove_background — 손그림 카툰 스타일이라 픽셀 특화 도구가 필요 없다). 최종 아트가 생기기 전까지 `apps/mobile/assets/`의 배경·캐릭터는 자리표시자다 — 교체할 때는 각 폴더 `CREDITS.md`에 적힌 규격(레이어 구성, 프레임 크기·수)만 맞추면 코드 수정 없이 파일 교체로 끝난다.
 
 ## DB 스키마 (기획서 5.1)
 

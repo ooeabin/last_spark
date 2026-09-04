@@ -28,7 +28,7 @@ src/
 
 ## 디자인 시스템
 
-`src/shared/theme/tokens.ts`가 `docs/DESIGN.md`(Spotify 스타일 다크 디자인 시스템)를 이 프로젝트에 맞게 옮긴 것이다. 근흑 배경 단계(`background`/`surface`/`surfaceAlt`), 단일 기능색(`accent`), 알약/원형 버튼, 두꺼운 그림자, 콤팩트한 타이포 스케일 — 구조는 DESIGN.md를 그대로 따르고, `accent` 색상값만 사이버펑크 톤 placeholder다. 기획서 9.4 "아트 디렉션 고정" 단계에서 실제 팔레트(5~6색)가 확정되면 `tokens.ts`의 `colors.accent`/`colors.accentBorder`만 바꾸면 된다 — 컴포넌트 코드는 손댈 필요 없음.
+`src/shared/theme/tokens.ts`가 `docs/DESIGN.md`(Spotify 스타일 다크 디자인 시스템)를 이 프로젝트에 맞게 옮긴 것이다. 근흑 배경 단계(`background`/`surface`/`surfaceAlt`), 단일 기능색(`accent`), 알약/원형 버튼, 두꺼운 그림자, 콤팩트한 타이포 스케일 — 구조는 DESIGN.md를 그대로 따르고, `accent`/`accentBorder` 값만 기획서 2.1.1 고정 팔레트의 "도깨비불 민트"(캐릭터 머리 위 불꽃과 같은 색)로 잡혀 있다. 팔레트를 바꾸려면 기획서 2.1.1부터 고친 뒤 `tokens.ts`의 토큰 값만 바꾸면 된다 — 컴포넌트 코드는 손댈 필요 없음.
 
 새 UI를 만들 때는 색상 하드코딩 대신 `@/shared/theme/tokens`의 값을 쓰고, 텍스트는 `AppText`, 버튼은 `Button`(primary/pill/outline/circular variant) 등 `@/shared/ui`의 공통 컴포넌트를 우선 재사용한다. 강제 규칙(허용된 variant/토큰 목록, HEX 리터럴 금지 등)의 상세는 `.claude/skills/last-spark-domain/SKILL.md`의 "UI 컴포넌트 규칙"·"색상 규칙" 절 참고.
 

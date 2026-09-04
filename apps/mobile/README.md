@@ -44,7 +44,7 @@ src/
 - DESIGN.md 기반 다크 테마 디자인 토큰 및 기본 UI 키트(Button/Card/AppText)
 
 **아직 안 함 (TODO — `docs/실행체크리스트.md` 참고)**
-- 실제 배경/캐릭터 에셋(Higgsfield/PixelLab) — 지금은 캔버스 자리만 있음, `react-native-skia` 렌더링 로직 미구현
+- 실제 배경/캐릭터 최종 아트(Higgsfield) — 지금 `assets/`의 배경·캐릭터는 기획서 2.1.1 팔레트로 스크립트 생성한 자리표시자
 - RevenueCat(IAP), AdMob(보상형 광고), Sentry, Amplitude 등 — 계정/콘솔 설정 이후 연동
-- 근접 채팅, 도트 리액션, 건배 등 라운지 내 세부 인터랙션(4.2-B)
+- 근접 채팅, 리액션, 건배 등 라운지 내 세부 인터랙션(4.2-B)
 - 푸시 알림(`expo-notifications`) 배선
